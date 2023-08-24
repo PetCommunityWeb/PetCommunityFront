@@ -1,5 +1,5 @@
 <template>
-  <v-app-bar app color="deep-purple accent-4">
+  <v-app-bar app color="blue accent-4">
     <v-toolbar-title className="white--text">회사명/로고</v-toolbar-title>
 
     <v-spacer></v-spacer>

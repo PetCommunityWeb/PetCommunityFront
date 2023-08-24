@@ -29,6 +29,8 @@
 
 
 <script>
+import axios from "@/axios/axios-instance";
+
 export default {
   name: "LoginView",
   data() {
@@ -38,8 +40,31 @@ export default {
     };
   },
   methods: {
-    login() {
-      // 로그인 로직을 여기에 구현하세요.
+    async login() {
+      const data = {
+        username: this.username,
+        password: this.password,
+      };
+      try {
+        await axios.post("/users/login", data)
+            .then(response => {
+                  console.log(response.headers)
+                  const accessToken = response.headers.get("authorization")
+                  window.localStorage.setItem('accessToken', accessToken)
+
+                  // const refreshToken = response.headers.get("RefreshToken");
+                  // if (accessToken !== undefined && refreshToken !== undefined) {
+                  //   window.localStorage.setItem('accessToken', accessToken)
+                  //   Cookies.set("refreshToken", refreshToken)
+                  //   window.location.href = '/home'
+                  // }
+                  this.$router.push("/");
+                }
+            )
+      } catch (error) {
+        alert(error.response.data)
+        console.log(error.response.data);
+      }
     },
     goToSignUp() {
       this.$router.push("/signup");  // 회원가입 라우트로 이동합니다. 경로는 필요에 따라 변경해주세요.

@@ -41,6 +41,8 @@
 </template>
 
 <script>
+import axios from "@/axios/axios-instance";
+
 export default {
   name: "SignUp",
   data() {
@@ -53,6 +55,22 @@ export default {
   },
   methods: {
     submitForm() {
+      const userInfo = {
+        username: this.username,
+        password: this.password,
+        nickname: this.nickname,
+        email: this.email,
+      }
+      axios.post("/users/signup", userInfo)
+          .then(response => {
+            console.log(response);
+            alert('회원가입 성공')
+            this.$router.push('/login')
+          })
+          .catch(error => {
+            console.log(error);
+            alert(error.response.data)
+          })
       // TODO: 회원가입 로직 구현
       console.log("Form Submitted:", {
         username: this.username,
