@@ -1,47 +1,69 @@
 import Vue from 'vue';
 import Router from 'vue-router';
 
-Vue.use(Router);
+import FindHospital from '@/views/FindHospital.vue';
+import RealtimeConsult from '@/views/RealtimeConsult.vue';
+import Community from '@/views/Community.vue';
+import FeedBoard from '@/components/FeedBoard.vue'
+import TipBoard from '@/components/TipBoard.vue'
+import PetService from '@/views/PetService.vue';
+import LoginView from '@/views/LoginView.vue';  // 이미 있을 것으로 추정
+import MyPage from '@/views/MyPage.vue';
+import SignUp from "@/views/SignUp";
 
-const routes = [
-    // {
-    //     path: '/find-hospital',
-    //     name: 'FindHospital',
-    //     component: () => import('@/views/FindHospital.vue')
-    // },
-    // {
-    //     path: '/realtime-consult',
-    //     name: 'RealtimeConsult',
-    //     component: () => import('@/views/RealtimeConsult.vue')
-    // },
-    // {
-    //     path: '/community',
-    //     name: 'Community',
-    //     component: () => import('@/views/Community.vue')
-    // },
-    // {
-    //     path: '/pet-service',
-    //     name: 'PetService',
-    //     component: () => import('@/views/PetService.vue')
-    // },
-    {
-        path: '/login',
-        name: 'Login',
-        component: () => import('../views/LoginView.vue')
-    },
-    // {
-    //     path: '/mypage',
-    //     name: 'MyPage',
-    //     component: () => import('@/views/MyPage.vue')
-    // },
-    // {
-    //     path: '*',
-    //     redirect: '/find-hospital'  // 기본 경로 설정
-    // }
-];
+Vue.use(Router);
 
 export default new Router({
     mode: 'history',
-    base: process.env.BASE_URL,
-    routes
+    routes: [
+        {
+            path: '/find-hospital',
+            name: 'FindHospital',
+            component: FindHospital
+        },
+        {
+            path: '/realtime-consult',
+            name: 'RealtimeConsult',
+            component: RealtimeConsult
+        },
+        {
+            path: '/community',
+            name: 'Community',
+            component: Community
+        },
+        {
+            path: '/pet-service',
+            name: 'PetService',
+            component: PetService,
+            children: [
+                {
+                    path: 'feed',
+                    component: FeedBoard
+                },
+                {
+                    path: 'tip',
+                    component: TipBoard
+                }
+                ]
+        },
+        {
+            path: '/login',
+            name: 'LoginView',
+            component: LoginView
+        },
+        {
+            path: '/signup',
+            name: 'SignUp',
+            component: SignUp
+        },
+        {
+            path: '/mypage',
+            name: 'MyPage',
+            component: MyPage
+        },
+        {
+            path: '*',  // 기본 경로 설정
+            redirect: '/find-hospital'
+        }
+    ]
 });

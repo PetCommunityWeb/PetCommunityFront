@@ -8,7 +8,7 @@
     <v-btn text to="/realtime-consult" color="white" className="mx-2">실시간 상담</v-btn>
     <v-btn text to="/community" color="white" className="mx-2">커뮤니티</v-btn>
     <v-btn text to="/pet-service" color="white" className="mx-2">애견 서비스</v-btn>
-    <v-btn text v-if="!isLoggedIn" to="/login" color="white" className="mx-2">로그인</v-btn>
+    <v-btn text v-if="!isLoggedIn" to="/login" color="white" class="mx-2">로그인</v-btn>
     <v-btn text v-if="isLoggedIn" to="/mypage" color="white" className="mx-2">마이페이지</v-btn>
   </v-app-bar>
 </template>
