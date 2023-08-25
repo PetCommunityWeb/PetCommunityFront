@@ -18,17 +18,14 @@
                 <v-text-field v-model="hospital.introduction" label="소개"></v-text-field>
               </v-col>
               <v-col cols="12">
-                <v-text-field v-model="hospital.imageUrl" label="이미지 URL"></v-text-field>
+                <!-- 이미지 선택 기능 추가 -->
+                <v-file-input label="이미지 선택" @change="handleFileChange" accept="image/*"></v-file-input>
+                <!-- 선택한 이미지의 URL 또는 미리보기를 보여줄 수 있습니다. -->
+                <img :src="hospital.imageUrl" v-if="hospital.imageUrl" alt="Selected Image" width="100%" />
               </v-col>
               <v-col cols="12">
-                <button @click="openKakaoAddressSearch">주소 검색</button>
-                <input type="text" v-model="hospital.address" readonly />
-              </v-col>
-              <v-col cols="12">
-                <v-text-field v-model="hospital.latitude" label="위도" readonly></v-text-field>
-              </v-col>
-              <v-col cols="12">
-                <v-text-field v-model="hospital.longitude" label="경도" readonly></v-text-field>
+                <v-text-field type="text" v-model="hospital.address" label="주소를 검색해주세요" readonly />
+                <button @click="openKakaoAddressSearch" style="border: 1px solid gray;">주소 검색</button>
               </v-col>
               <v-col cols="12">
                 <v-text-field v-model="hospital.phoneNumber" label="전화번호"></v-text-field>
@@ -90,6 +87,18 @@ export default {
     document.head.appendChild(script);
   },
   methods: {
+    handleFileChange(event) {
+      const file = event.target.files[0];
+      if (file) {
+        // 이미지 파일을 URL로 변환하여 미리보기를 생성
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          this.hospital.imageUrl = e.target.result;
+          console.log(this.hospital.imageUrl)
+        };
+        reader.readAsDataURL(file);
+      }
+    },
     registerHospital() {
       // 병원 등록 로직
       console.log('병원 등록:', this.hospital);
@@ -107,16 +116,19 @@ export default {
       }
     },
     async fetchCoordinatesFromAPI(address) {
-      const apiKey = "248ee64a41fbb64c19a838033afa8fe9";  // 여기에 실제 API 키를 넣어주세요.
+      const apiKey = "db7e050b5a3baac2d26ab388e0b912c5";  // 여기에 실제 API 키를 넣어주세요.
       const apiUrl = `https://dapi.kakao.com/v2/local/search/address.json?query=${encodeURIComponent(address)}`;
 
       const response = await fetch(apiUrl, {
         headers: {
-          'Authorization': `KakaoAK ${apiKey}`
+          'Authorization': `KakaoAK ${apiKey}`,
         }
       });
-
       const data = await response.json();
+      // 성공적인 응답인지 체크
+      if (response.status !== 200) {
+        throw new Error(data.message);
+      }
       if (data.documents && data.documents.length > 0) {
         return {
           latitude: data.documents[0].y,
@@ -128,12 +140,9 @@ export default {
     },
     openKakaoAddressSearch() {
       new window.daum.Postcode({
-        oncomplete: data => {
+        oncomplete: async data => {
           this.hospital.address = data.address; // 지번 주소
-
-          // 필요하면 다음과 같이 다른 데이터도 저장할 수 있습니다.
-          // this.hospital.latitude = data.x;
-          // this.hospital.longitude = data.y;
+          await this.convertAddressToCoordinates();
         }
       }).open();
     }
