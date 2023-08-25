@@ -1,8 +1,8 @@
 <template>
   <div>
     <h1>내 정보</h1>
-    <p>이름: {{ userInfo.name }}</p>
-    <p>이메일: {{ userInfo.email }}</p>
+    <p>이름: {{ nickname }}</p>
+    <p>이메일: {{ email }}</p>
     <!-- 추가 정보 필드는 여기에 추가하세요 -->
   </div>
 </template>
@@ -13,7 +13,7 @@ import { mapState } from 'vuex';
 export default {
   name: "MyPage",
   computed: {
-    ...mapState(['userInfo'])
+    ...mapState(['nickname', 'email', 'imageUrl', 'role'])
   }
 }
 </script>

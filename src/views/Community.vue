@@ -25,12 +25,19 @@
   </div>
 </template>
 
+
+
+
+
 <script>
 export default {
   name: 'CommunityPage'
 }
 </script>
 
-<style>
-/* 필요한 스타일 추가 */
+
+<style scoped>
+.mt-n2 {
+  margin-top: -16px; /* 예시로 작성한 값입니다. 필요에 따라 조정하세요. */
+}
 </style>
