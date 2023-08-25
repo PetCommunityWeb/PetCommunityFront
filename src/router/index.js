@@ -76,7 +76,57 @@ const routes = [
 
 const router = new Router({
     mode: 'history',
-    routes
+    routes: [
+        {
+            path: '/find-hospital',
+            name: 'FindHospital',
+            component: FindHospital
+        },
+        {
+            path: '/realtime-consult',
+            name: 'RealtimeConsult',
+            component: RealtimeConsult
+        },
+        {
+            path: '/community',
+            name: 'Community',
+            component: Community,
+            children: [
+                {
+                    path: 'feed',
+                    component: FeedBoard
+                },
+                {
+                    path: 'tip',
+                    component: TipBoard
+                }
+            ]
+        },
+        {
+            path: '/pet-service',
+            name: 'PetService',
+            component: PetService,
+        },
+        {
+            path: '/login',
+            name: 'LoginView',
+            component: LoginView
+        },
+        {
+            path: '/signup',
+            name: 'SignUp',
+            component: SignUp
+        },
+        {
+            path: '/mypage',
+            name: 'MyPage',
+            component: MyPage
+        },
+        {
+            path: '*',  // 기본 경로 설정
+            redirect: '/find-hospital'
+        }
+    ]
 });
 
 router.beforeEach((to, from, next) => {

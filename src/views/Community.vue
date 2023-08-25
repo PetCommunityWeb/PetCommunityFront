@@ -8,12 +8,12 @@
           </v-col>
           <v-col cols="auto" class="mb-0">
             <router-link to="/community/feed">
-              <v-btn color="primary" dark>Feed 게시판</v-btn>
+              <v-btn color="primary" dark>Feed</v-btn>
             </router-link>
           </v-col>
           <v-col cols="auto" class="mb-1">
             <router-link to="/community/tip">
-              <v-btn color="error" dark>Tip 게시판</v-btn>
+              <v-btn color="error" dark>Tip</v-btn>
             </router-link>
           </v-col>
           <v-col cols="12">
@@ -31,9 +31,10 @@
 
 <script>
 export default {
-  name: "Community"
+  name: 'CommunityPage'
 }
 </script>
+
 
 <style scoped>
 .mt-n2 {
