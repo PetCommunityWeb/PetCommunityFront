@@ -158,9 +158,7 @@ export default {
         };
         try {
           await axios.post("/feeds", data)
-              .then(response => {
-                this.dialog = false;
-              });
+          this.dialog = false;
         } catch (error) {
           alert(error.response.data);
           console.log(error.response.data);
