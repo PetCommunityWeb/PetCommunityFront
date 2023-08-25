@@ -43,6 +43,10 @@
             <v-img :src="feedDetail.imageUrl" max-height="300px" class="my-3 detailed-image"></v-img>
             <v-card-subtitle>{{ feedDetail.title }}</v-card-subtitle>
             <v-card-text>{{ feedDetail.content }}</v-card-text>
+            <!-- 좋아요 버튼 -->
+            <v-btn color="primary" class="mt-3" @click="postLike(feedDetail.id)">
+              <v-icon left>mdi-heart</v-icon> 좋아요 {{ feedDetail.likeCount }}
+            </v-btn>
           </v-col>
 
           <!-- Right side: Comments Section -->
@@ -127,6 +131,7 @@ export default {
     };
   },
   methods: {
+    // S3에 사진 업로드
     async uploadImageToS3(file) {
       AWS.config.update({
         accessKeyId: process.env.VUE_APP_AWS_ACCESS_KEY,
@@ -148,6 +153,8 @@ export default {
         console.error("S3 Upload Error:", error);
       }
     },
+
+    // feed 생성 및 백에 request 전달
     async uploadImage() {
       if (this.selectedImage) {
         const imageUrl = await this.uploadImageToS3(this.selectedImage);
@@ -157,11 +164,12 @@ export default {
           imageUrl: imageUrl // S3에서 반환한 URL
         };
         try {
-          await axios.post("/feeds", data)
+          const response = await axios.post("/feeds", data);
+          // 서버에서 반환된 새로운 피드 데이터를 클라이언트의 상태에 추가
+          this.feeds.push(response.data);
           this.dialog = false;
         } catch (error) {
           alert(error.response.data);
-          console.log(error.response.data);
         }
       }
     },
@@ -187,11 +195,12 @@ export default {
       }
     },
 
+    // 댓글 작성
     async postComment(feedId) {
       // 댓글 내용이 없는 경우
       if (!this.newCommentContent.trim()) {
         alert('댓글 내용을 입력해주세요.');
-        return;  // 함수 종료
+        return;
       }
 
       const data = {
@@ -199,13 +208,39 @@ export default {
       };
 
       try {
-        await axios.post(`/comments/${feedId}`, data);
+        const response = await axios.post(`/comments/${feedId}`, data);
+        const newComment = {
+          content: this.newCommentContent,
+          username: response.data.username
+        };
+        this.feedDetail.comments.push(newComment);
         this.newCommentContent = ''; // 댓글 입력 초기화
-        alert('댓글이 성공적으로 작성되었습니다.');
-        this.showFeedDetail(feedId); // 댓글 작성 후 피드 상세 정보 다시 로드
+        // this.showFeedDetail(feedId); // 댓글 작성 후 피드 상세 정보 다시 로드
       } catch (error) {
         console.error("Error posting comment:", error);
         alert('댓글 작성 중 오류가 발생했습니다. 다시 시도해 주세요.');
+      }
+    },
+
+    // feed 좋아요
+    async postLike(feedId) {
+      try {
+        const response = await axios.post(`/feeds/${feedId}/likes`);
+        // 직접 likeCount 증가 or 감소
+        if (response.data.msg === "성공") {
+          this.feedDetail.likeCount += 1;
+        }
+        else if (response.data.msg === "취소") {
+          this.feedDetail.likeCount -= 1;
+        }
+        else {
+          console.log(response.data)
+          alert(response.data.msg)
+        }
+        // this.showFeedDetail(feedId);  // 좋아요 후 피드 상세 정보 다시 로드
+      } catch (error) {
+        console.error("Error posting like:", error);
+        alert('좋아요 중 오류가 발생했습니다. 다시 시도해 주세요.');
       }
     },
 
