@@ -29,12 +29,7 @@ export default new Router({
         {
             path: '/community',
             name: 'Community',
-            component: Community
-        },
-        {
-            path: '/pet-service',
-            name: 'PetService',
-            component: PetService,
+            component: Community,
             children: [
                 {
                     path: 'feed',
@@ -44,7 +39,12 @@ export default new Router({
                     path: 'tip',
                     component: TipBoard
                 }
-                ]
+            ]
+        },
+        {
+            path: '/pet-service',
+            name: 'PetService',
+            component: PetService,
         },
         {
             path: '/login',
