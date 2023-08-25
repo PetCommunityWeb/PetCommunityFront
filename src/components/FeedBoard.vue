@@ -40,7 +40,7 @@
           <!-- Left side: Feed Detail -->
           <v-col cols="6">
             <v-card-title>{{ feedDetail.username }}</v-card-title>
-            <v-img :src="feedDetail.imageUrl" max-height="300px" class="my-3"></v-img>
+            <v-img :src="feedDetail.imageUrl" max-height="300px" class="my-3 detailed-image"></v-img>
             <v-card-subtitle>{{ feedDetail.title }}</v-card-subtitle>
             <v-card-text>{{ feedDetail.content }}</v-card-text>
           </v-col>
@@ -50,10 +50,14 @@
             <v-divider></v-divider>
             <v-list dense>
               <v-list-item-group v-for="comment in feedDetail.comments" :key="comment.id">
-                <v-list-item-content>
-                  <v-list-item-title>{{ comment.username }}</v-list-item-title>
+                <v-list-item-content class="comment-item">
+                  <v-list-item-title>
+                    <v-icon small left>mdi-account-outline</v-icon>
+                    {{ comment.username }}
+                  </v-list-item-title>
                   <v-list-item-subtitle>{{ comment.content }}</v-list-item-subtitle>
                 </v-list-item-content>
+                <v-divider></v-divider>
               </v-list-item-group>
             </v-list>
             <v-textarea
@@ -229,5 +233,18 @@ export default {
 .feed-item:hover {
   transform: translateY(-5px);
   box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+}
+
+.detailed-image {
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.comment-item {
+  padding: 10px 0;
+}
+
+.comment-item > .v-list-item__title > .v-icon {
+  color: #777;
 }
 </style>
