@@ -15,7 +15,7 @@
               :src="feed.imageUrl"
               max-height="300px"
               class="my-3"
-              @click="openFeedDetailModal(feed.id)"
+              @click="showFeedDetail(feed.id)"
           ></v-img>
 
           <v-card-subtitle>{{ feed.title }}</v-card-subtitle>
@@ -33,6 +33,45 @@
       </v-col>
     </v-row>
 
+    <!-- 피드 상세 정보를 보여주는 모달 -->
+    <v-dialog v-model="feedDetailDialog" max-width="900px">
+      <v-card>
+        <v-row>
+          <!-- Left side: Feed Detail -->
+          <v-col cols="6">
+            <v-card-title>{{ feedDetail.username }}</v-card-title>
+            <v-img :src="feedDetail.imageUrl" max-height="300px" class="my-3"></v-img>
+            <v-card-subtitle>{{ feedDetail.title }}</v-card-subtitle>
+            <v-card-text>{{ feedDetail.content }}</v-card-text>
+          </v-col>
+
+          <!-- Right side: Comments Section -->
+          <v-col cols="6">
+            <v-divider></v-divider>
+            <v-list dense>
+              <v-list-item-group v-for="comment in feedDetail.comments" :key="comment.id">
+                <v-list-item-content>
+                  <v-list-item-title>{{ comment.username }}</v-list-item-title>
+                  <v-list-item-subtitle>{{ comment.content }}</v-list-item-subtitle>
+                </v-list-item-content>
+              </v-list-item-group>
+            </v-list>
+            <v-textarea
+                label="댓글을 작성해 주세요"
+                v-model="newCommentContent"
+                class="mt-3"
+                rows="2"
+            ></v-textarea>
+            <v-btn text color="primary" @click="postComment(feedDetail.id)">확인</v-btn>
+          </v-col>
+        </v-row>
+
+        <!-- Close Button -->
+        <v-card-actions>
+          <v-btn text @click="feedDetailDialog = false">닫기</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
 
     <!-- Vuetify의 v-dialog를 사용한 모달 -->
     <v-dialog v-model="dialog" max-width="600px">
@@ -79,7 +118,8 @@ export default {
       content: '',
       selectedImage: null,
       feeds: [],  // 피드 목록 저장용
-      feedDetail: {}  // 선택된 피드의 상세 정보
+      feedDetail: {},  // 선택된 피드의 상세 정보
+      newCommentContent: '' // 사용자가 작성할 댓글 내용
     };
   },
   methods: {
@@ -143,7 +183,30 @@ export default {
       } catch (error) {
         console.error("Error fetching feed detail:", error);
       }
-    }
+    },
+
+    async postComment(feedId) {
+      // 댓글 내용이 없는 경우
+      if (!this.newCommentContent.trim()) {
+        alert('댓글 내용을 입력해주세요.');
+        return;  // 함수 종료
+      }
+
+      const data = {
+        content: this.newCommentContent,
+      };
+
+      try {
+        await axios.post(`/comments/${feedId}`, data);
+        this.newCommentContent = ''; // 댓글 입력 초기화
+        alert('댓글이 성공적으로 작성되었습니다.');
+        this.showFeedDetail(feedId); // 댓글 작성 후 피드 상세 정보 다시 로드
+      } catch (error) {
+        console.error("Error posting comment:", error);
+        alert('댓글 작성 중 오류가 발생했습니다. 다시 시도해 주세요.');
+      }
+    },
+
   },
   created() {
     this.fetchFeeds(); // 컴포넌트가 생성될 때 피드를 로드
