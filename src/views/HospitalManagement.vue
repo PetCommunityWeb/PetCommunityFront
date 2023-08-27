@@ -1,8 +1,31 @@
 <template>
   <v-container class="hospital-management-container">
     <h1>병원 관리</h1>
-    <v-btn @click="dialog = true">병원 등록하기</v-btn>
+    <!-- 소유하고 있는 병원 목록 -->
+    <div class="my-hospitals-list">
+      <v-row>
+        <v-col cols="12" sm="6" md="4" v-for="hospital in myHospitals" :key="hospital.id">
+          <router-link :to="`/hospital/${hospital.id}`">
+            <v-card class="fixed-size-card">
+              <v-img :src="hospital.imageUrl" alt="Hospital Image" height="200px"></v-img>
+              <v-card-title>{{ hospital.name }}</v-card-title>
+              <v-card-subtitle>{{ hospital.address }}</v-card-subtitle>
+              <v-card-text>
+                <p>{{ hospital.introduction }}</p>
+                <p><strong>전화번호:</strong> {{ hospital.phoneNumber }}</p>
+              </v-card-text>
+              <v-card-actions>
+                <v-chip v-for="species in hospital.speciesEnums" :key="species" small>{{ species }}</v-chip>
+                <v-chip v-for="subject in hospital.subjectEnums" :key="subject" small outlined>{{ subject }}</v-chip>
+              </v-card-actions>
+            </v-card>
+          </router-link>
+        </v-col>
+      </v-row>
+    </div>
 
+
+    <v-btn @click="dialog = true">병원 등록하기</v-btn>
     <v-dialog v-model="dialog" max-width="500px">
       <v-card>
         <v-card-title>
@@ -60,11 +83,14 @@
 </template>
 
 <script>
+import hospitalMixin from "@/mixins/hospitalMixin";
 export default {
   name: "HospitalManagement",
+  mixins: [hospitalMixin],
   data() {
     return {
       hospital: {
+        id: "",
         name: "",
         introduction: "",
         imageUrl: "",
@@ -78,74 +104,17 @@ export default {
       dialog: false,
       speciesEnums: ['강아지', '고양이', '기타'],  // 예시입니다. 실제 값을 기입해주세요.
       subjectEnums: ['내과', '외과', '정형외과'],  // 예시입니다. 실제 값을 기입해주세요.
+      myHospitals: [],  // 소유한 병원 목록을 저장할 배열
     };
   },
-  mounted() {
+  async mounted() {
     // 카카오 주소 검색 위젯을 로드합니다.
     const script = document.createElement('script');
     script.src = '//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js';
     document.head.appendChild(script);
+    await this.fetchMyHospitals();  // 병원 목록 가져오기
   },
   methods: {
-    handleFileChange(event) {
-      const file = event.target.files[0];
-      if (file) {
-        // 이미지 파일을 URL로 변환하여 미리보기를 생성
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          this.hospital.imageUrl = e.target.result;
-          console.log(this.hospital.imageUrl)
-        };
-        reader.readAsDataURL(file);
-      }
-    },
-    registerHospital() {
-      // 병원 등록 로직
-      console.log('병원 등록:', this.hospital);
-      this.dialog = false;
-    },
-    async convertAddressToCoordinates() {
-      try {
-        const coordinates = await this.fetchCoordinatesFromAPI(this.hospital.address);
-
-        // 얻어진 위도와 경도를 데이터에 저장
-        this.hospital.latitude = coordinates.latitude;
-        this.hospital.longitude = coordinates.longitude;
-      } catch (error) {
-        console.error('Failed to convert address to coordinates:', error);
-      }
-    },
-    async fetchCoordinatesFromAPI(address) {
-      const apiKey = "db7e050b5a3baac2d26ab388e0b912c5";  // 여기에 실제 API 키를 넣어주세요.
-      const apiUrl = `https://dapi.kakao.com/v2/local/search/address.json?query=${encodeURIComponent(address)}`;
-
-      const response = await fetch(apiUrl, {
-        headers: {
-          'Authorization': `KakaoAK ${apiKey}`,
-        }
-      });
-      const data = await response.json();
-      // 성공적인 응답인지 체크
-      if (response.status !== 200) {
-        throw new Error(data.message);
-      }
-      if (data.documents && data.documents.length > 0) {
-        return {
-          latitude: data.documents[0].y,
-          longitude: data.documents[0].x
-        };
-      } else {
-        throw new Error('No coordinates found for the given address.');
-      }
-    },
-    openKakaoAddressSearch() {
-      new window.daum.Postcode({
-        oncomplete: async data => {
-          this.hospital.address = data.address; // 지번 주소
-          await this.convertAddressToCoordinates();
-        }
-      }).open();
-    }
   },
 }
 </script>
@@ -157,5 +126,19 @@ export default {
   align-items: center;
   justify-content: center;
   height: 100vh;
+}
+
+.my-hospitals-list {
+  margin-bottom: 20px;
+}
+
+.my-hospitals-list ul {
+  list-style-type: none;
+  padding-left: 0;
+}
+
+.fixed-size-card {
+  width: 300px;
+  height: 450px;
 }
 </style>
