@@ -10,6 +10,10 @@
             <p>{{ hospital.introduction }}</p>
             <p><strong>전화번호:</strong> {{ hospital.phoneNumber }}</p>
           </v-card-text>
+          <v-card-actions>
+            <v-chip v-for="species in hospital.speciesEnums" :key="species" small>{{ species }}</v-chip>
+            <v-chip v-for="subject in hospital.subjectEnums" :key="subject" small outlined>{{ subject }}</v-chip>
+          </v-card-actions>
           <v-card-actions v-if="isOwner">
             <v-btn @click="openAppointmentModal">병원 관리</v-btn>
           </v-card-actions>
@@ -78,8 +82,12 @@
           <v-text-field label="병원 이름" v-model="editHospitalData.name"></v-text-field>
           <v-text-field label="소개" v-model="editHospitalData.introduction" multiline></v-text-field>
           <v-file-input label="이미지 선택" @change="handleFileChange" accept="image/*"></v-file-input>
-          <img :src="editHospitalData.imageUrl" v-if="editHospitalData.imageUrl" alt="Selected Image" width="100%"/>
-          <v-text-field label="병원 주소" v-model="editHospitalData.address"></v-text-field>
+          <img :src="editHospitalData.imageUrl" v-if="editHospitalData.imageUrl" alt="Selected Image" width="100%" />
+          <v-col cols="12">
+            <v-text-field type="text" v-model="editHospitalData.address" label="주소를 검색해주세요" readonly />
+            <button @click="openKakaoAddressSearch" style="border: 1px solid gray;">주소 검색</button>
+          </v-col>
+<!--          <v-text-field label="병원 주소" v-model="editHospitalData.address"></v-text-field>-->
           <v-text-field label="전화번호" v-model="editHospitalData.phoneNumber"></v-text-field>
           <v-select
               v-model="editHospitalData.speciesEnums"
@@ -148,6 +156,18 @@ export default {
     }
   },
   methods: {
+    handleFileChange(file) {
+      if (file) {
+        // 이미지 파일 객체를 저장
+        this.editHospitalData.imageFile = file;
+        // 이미지 파일을 URL로 변환하여 미리보기를 생성
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          this.editHospitalData.imageUrl = e.target.result;
+        };
+        reader.readAsDataURL(file);
+      }
+    },
     async reservate(slot) {
       console.log(slot)
       const requestData = {
@@ -181,6 +201,12 @@ export default {
       this.editHospitalDialog = true;
     },
     async updateHospital() {
+      if (this.editHospitalData.imageFile) {
+        const uploadedImageUrl = await this.uploadImageToS3(this.editHospitalData.imageFile);
+        if (uploadedImageUrl) {
+          this.editHospitalData.imageUrl = uploadedImageUrl;
+        }
+      }
       try {
         await axios.put(`/hospitals/${this.hospital.id}`, this.editHospitalData);
         this.hospital = {...this.editHospitalData};
@@ -232,6 +258,25 @@ export default {
       } catch (error) {
         console.error("Failed to add appointment slot:", error);
       }
+    },
+    async convertAddressToCoordinates() {
+      try {
+        const coordinates = await this.fetchCoordinatesFromAPI(this.editHospitalData.address);
+
+        // 얻어진 위도와 경도를 데이터에 저장
+        this.editHospitalData.latitude = coordinates.latitude;
+        this.editHospitalData.longitude = coordinates.longitude;
+      } catch (error) {
+        console.error('Failed to convert address to coordinates:', error);
+      }
+    },
+    openKakaoAddressSearch() {
+      new window.daum.Postcode({
+        oncomplete: async data => {
+          this.editHospitalData.address = data.address; // 지번 주소
+          await this.convertAddressToCoordinates();
+        }
+      }).open();
     },
   }
 };
