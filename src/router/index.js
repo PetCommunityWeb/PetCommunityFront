@@ -6,6 +6,7 @@ import store from '@/store';  // 스토어 임포트
 
 import FindHospital from '@/views/FindHospital.vue';
 import RealtimeConsult from '@/views/RealtimeConsult.vue';
+import ChatRoom from "@/views/ChatRoom";
 import Community from '@/views/Community.vue';
 import FeedBoard from '@/components/FeedBoard.vue';
 import TipBoard from '@/components/TipBoard.vue';
@@ -28,6 +29,11 @@ const routes = [
         path: '/realtime-consult',
         name: 'RealtimeConsult',
         component: RealtimeConsult
+    },
+    {
+        path: '/chatroom',
+        name: 'ChatRoom',
+        component: ChatRoom
     },
     {
         path: '/community',
@@ -92,6 +98,7 @@ router.beforeEach((to, from, next) => {
             const user = response.data;
             console.log(user)
             store.commit('setId', user.id)
+            store.commit('setUsername', user.username)
             store.commit('setUserRole', user.role);
             store.commit('setNickname', user.nickname);
             store.commit('setImageUrl', user.imageUrl);

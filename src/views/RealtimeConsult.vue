@@ -1,43 +1,68 @@
-<!--<template>-->
-<!--  <div>-->
-<!--    <div v-for="message in messages" :key="message.id">-->
-<!--      {{ message.text }}-->
-<!--    </div>-->
-<!--    <input v-model="newMessage" @keyup.enter="sendMessage">-->
-<!--    <button @click="sendMessage">Send</button>-->
-<!--  </div>-->
-<!--</template>-->
+<template>
+  <v-container>
+    <v-row>
+      <v-col cols="12">
+        <v-text-field
+            v-model="roomName"
+            placeholder="채팅방 이름"
+            @keyup.enter="createRoom"
+        />
+        <v-btn @click="createRoom">방 생성</v-btn>
+        <v-list>
+          <v-list-item-group v-if="rooms.length">
+            <v-list-item v-for="room in rooms" :key="room.uuid">
+              <v-list-item-content>
+                <v-list-item-title @click="enterRoom(room.uuid)">
+                  {{ room.roomName }}
+                </v-list-item-title>
+              </v-list-item-content>
+            </v-list-item>
+          </v-list-item-group>
+        </v-list>
+      </v-col>
+    </v-row>
+  </v-container>
+</template>
 
-<!--<script>-->
-<!--import io from "socket.io-client";-->
+<script>
+import axios from "@/axios/axios-instance";
 
-<!--export default {-->
-<!--  name: "RealtimeConsult",-->
-<!--  data() {-->
-<!--    return {-->
-<!--      socket: null,-->
-<!--      newMessage: '',-->
-<!--      messages: []-->
-<!--    };-->
-<!--  },-->
-<!--  created() {-->
-<!--    this.socket = io('http://your-websocket-server-url:port');-->
+export default {
+  data() {
+    return {
+      roomName: '',
+      rooms: []
+    };
+  },
+  created() {
+    this.fetchRooms();
+  },
+  methods: {
+    async fetchRooms() {
+      const response = await axios.get('/chats');
+      this.rooms = response.data;
+      console.log(this.rooms)
+    },
+    async createRoom() {
+      if (this.roomName.trim() !== '') {
+        const response = await axios.post('/chats', {
+          name: this.roomName
+        });
 
-<!--    this.socket.on('newMessage', (message) => {-->
-<!--      this.messages.push(message);-->
-<!--    });-->
-<!--  },-->
-<!--  methods: {-->
-<!--    sendMessage() {-->
-<!--      if (this.newMessage.trim() !== '') {-->
-<!--        this.socket.emit('sendMessage', { text: this.newMessage });-->
-<!--        this.newMessage = '';-->
-<!--      }-->
-<!--    }-->
-<!--  }-->
-<!--}-->
-<!--</script>-->
+        // 서버에서 반환된 방 정보를 this.rooms 배열에 추가
+        if (response.data && response.data.room) {
+          this.rooms.push(response.data.room);
+        } else if (response.data) { // 서버에서 방 정보를 직접 반환할 경우
+          this.rooms.push(response.data);
+        }
 
-<!--<style scoped>-->
-<!--/* 스타일 추가 */-->
-<!--</style>-->
+        this.roomName = '';
+      }
+    },
+    enterRoom(uuid) {
+      console.log(uuid)
+      this.$router.push({ name: 'ChatRoom', params: { uuid } });
+    }
+  }
+};
+</script>

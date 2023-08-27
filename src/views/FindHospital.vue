@@ -4,11 +4,18 @@
     <div class="content-wrapper">
       <div id="kakao-map"></div>
       <div class="hospital-list">
-        <div class="hospital" v-for="hospital in hospitals" :key="hospital.id">
-          <h3>{{ hospital.name }}</h3>
-          <p>주소: {{ hospital.address }}</p>
-          <!-- 병원에 대한 추가 정보를 여기에 표시하실 수 있습니다. -->
-        </div>
+        <v-card v-for="hospital in visibleHospitals" :key="hospital.id" class="mb-5">
+          <v-card-title>{{ hospital.name }}</v-card-title>
+          <v-card-subtitle>{{ hospital.address }}</v-card-subtitle>
+          <v-card-text>
+            전화번호: {{ hospital.phoneNumber }}<br>
+            진료과목: {{ hospital.subjectEnums.join(', ') }}<br>
+            진료동물: {{ hospital.speciesEnums.join(', ') }}
+          </v-card-text>
+          <v-card-actions>
+            <v-btn color="primary" text :to="`/hospital/${hospital.id}`">자세히</v-btn>
+          </v-card-actions>
+        </v-card>
       </div>
     </div>
   </div>
@@ -21,14 +28,30 @@ export default {
   data() {
     return {
       hospitals: [],
-      map: null  // 맵 객체를 저장할 변수
+      visibleHospitals: [],  // 화면에 표시될 병원들의 배열
+      map: null
     };
   },
   mounted() {
     this.fetchHospitalData();
     this.initMap();
+    window.kakao.maps.event.addListener(this.map, 'bounds_changed', this.updateVisibleHospitals);
   },
   methods: {
+    updateVisibleHospitals() {
+      const bounds = this.map.getBounds();
+      const swLatLng = bounds.getSouthWest(); // 남서쪽 좌표
+      const neLatLng = bounds.getNorthEast(); // 북동쪽 좌표
+
+      this.visibleHospitals = this.hospitals.filter(hospital => {
+        return (
+            hospital.latitude >= swLatLng.getLat() &&
+            hospital.latitude <= neLatLng.getLat() &&
+            hospital.longitude >= swLatLng.getLng() &&
+            hospital.longitude <= neLatLng.getLng()
+        );
+      });
+    },
     fetchHospitalData() {
       axios.get("/hospitals")
           .then(response => {
@@ -68,8 +91,27 @@ export default {
           position: markerPosition
         });
         marker.setMap(this.map);
+
+        // InfoWindow의 내용을 설정합니다.
+        const iwContent = `
+          <div style="max-width: 300px; word-wrap: break-word; font-size: 12px;">
+            <strong>${hospital.name}</strong><br>
+            주소: ${hospital.address}<br>
+            전화번호: ${hospital.phoneNumber}<br>
+            <button onclick="window.location='/hospital/${hospital.id}'">자세히</button>
+          </div>`;
+
+        const infowindow = new window.kakao.maps.InfoWindow({
+          content: iwContent
+        });
+
+        window.kakao.maps.event.addListener(marker, 'click', () => {
+          infowindow.open(this.map, marker);
+        });
       });
     }
+
+
   }
 }
 </script>
