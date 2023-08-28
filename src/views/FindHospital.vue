@@ -5,6 +5,7 @@
       <div id="kakao-map"></div>
       <div class="hospital-list">
         <v-card v-for="hospital in visibleHospitals" :key="hospital.id" class="mb-5">
+          <img :src="hospital.imageUrl"  alt="병원 이미지" class="hospital-image"> <!-- 병원 이미지 추가 -->
           <v-card-title>{{ hospital.name }}</v-card-title>
           <v-card-subtitle>{{ hospital.address }}</v-card-subtitle>
           <v-card-text>
@@ -36,8 +37,17 @@ export default {
     this.fetchHospitalData();
     this.initMap();
     window.kakao.maps.event.addListener(this.map, 'bounds_changed', this.updateVisibleHospitals);
+    document.addEventListener('routeToHospital', this.handleRouteEvent);
+  },
+  beforeDestroy() {
+    // 이벤트 리스너 제거
+    document.removeEventListener('routeToHospital', this.handleRouteEvent);
   },
   methods: {
+    handleRouteEvent(event) {
+      const hospitalId = event.detail.hospitalId;
+      this.$router.push({ path: `/hospital/${hospitalId}` });
+    },
     updateVisibleHospitals() {
       const bounds = this.map.getBounds();
       const swLatLng = bounds.getSouthWest(); // 남서쪽 좌표
@@ -92,31 +102,50 @@ export default {
         });
         marker.setMap(this.map);
 
-        // InfoWindow의 내용을 설정합니다.
-        const iwContent = `
-          <div style="max-width: 300px; word-wrap: break-word; font-size: 12px;">
-            <strong>${hospital.name}</strong><br>
-            주소: ${hospital.address}<br>
-            전화번호: ${hospital.phoneNumber}<br>
-            <button onclick="window.location='/hospital/${hospital.id}'">자세히</button>
-          </div>`;
+        // CustomOverlay에 표시될 내용을 설정합니다.
+        const overlayContent = `
+              <div class="custom-overlay">
+                  <strong>${hospital.name}</strong><br>
+                  주소: ${hospital.address}<br>
+                  전화번호: ${hospital.phoneNumber}<br>
+                  <button data-id="${hospital.id}" onclick="routeToHospitalDetail(event)">자세히</button>
+              </div>`;
 
-        const infowindow = new window.kakao.maps.InfoWindow({
-          content: iwContent
+        const overlay = new window.kakao.maps.CustomOverlay({
+          content: overlayContent,
+          position: markerPosition,
+          yAnchor: 1.5  // Marker의 위에 위치하도록 조절합니다.
         });
 
         window.kakao.maps.event.addListener(marker, 'click', () => {
-          infowindow.open(this.map, marker);
+          // 기존에 표시된 overlay를 제거합니다.
+          overlay.setMap(overlay.getMap() ? null : this.map);
         });
       });
-    }
-
-
-  }
+    },
+  },
 }
+window.routeToHospitalDetail = function(event) {
+  const hospitalId = event.target.getAttribute('data-id');
+  const routeEvent = new CustomEvent('routeToHospital', {
+    detail: {
+      hospitalId: hospitalId
+    }
+  });
+  document.dispatchEvent(routeEvent);
+};
 </script>
 
-<style scoped>
+<style>
+.custom-overlay {
+  max-width: 300px;
+  padding: 10px;
+  background-color: #fff;  /* 흰색 배경 */
+  border: 1px solid #333;
+  border-radius: 5px;
+  font-size: 12px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);  /* 그림자 효과 추가 */
+}
 .map-container {
   display: flex;
   flex-direction: column;
@@ -141,7 +170,10 @@ export default {
   padding-left: 20px;
 }
 
-.hospital {
-  margin-bottom: 20px;
+.hospital-image {
+  width: 100%;
+  height: auto;
+  max-height: 150px; /* 원하는 높이로 설정할 수 있습니다. */
+  object-fit: cover; /* 이미지가 카드 크기에 맞게 조절됩니다. */
 }
 </style>
