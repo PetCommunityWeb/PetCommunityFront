@@ -11,7 +11,7 @@
           카테고리: <span class="place-category">{{ place.category_name }}</span><br>
           연락처: <span class="place-phone">{{ place.phone ? place.phone : '없음' }}</span><br>
           주소: <span class="place-address">{{ place.address_name }}</span><br>
-          거리: <span class="place-distance">{{ formatDistance(place.distance) }}</span><br>
+          거리: <span class="place-distance">{{ formatDistance(place) }}</span><br>
         </p>
         <a :href="place.place_url" target="_blank" class="place-link">자세히 보기</a>
         <hr class="place-separator">
@@ -36,7 +36,8 @@ export default {
       currentMarker: null,      // 현재 infoWindow가 연결된 마커를 추적
       placesInfo: [],
       itemsPerPage: 4,  // 페이지당 표시할 항목의 수
-      currentPage: 1    // 현재 페이지 번호
+      currentPage: 1,    // 현재 페이지 번호
+      currentUserLocation: null  // 사용자의 현재 위치를 저장하기 위한 변수
     };
   },
   // 샵 페이지 계산
@@ -55,6 +56,7 @@ export default {
   },
   methods: {
     initMap() {
+
       const container = document.getElementById('kakao-map');
       const options = {
         center: new window.kakao.maps.LatLng(37.5665, 126.9780),
@@ -74,14 +76,14 @@ export default {
         navigator.geolocation.getCurrentPosition((position) => {
           const lat = position.coords.latitude;
           const lon = position.coords.longitude;
-          const locPosition = new window.kakao.maps.LatLng(lat, lon);
-          this.map.setCenter(locPosition);
+          this.currentUserLocation = new window.kakao.maps.LatLng(lat, lon);  // 사용자의 위치 업데이트
+          this.map.setCenter(this.currentUserLocation);
 
           // 사용자의 현재 위치를 기준으로 애견샵 검색
-          this.searchPlaces(locPosition);
+          this.searchPlaces(this.currentUserLocation);
         }, () => {
           console.error("Geolocation access denied.");
-          this.searchPlaces(new window.kakao.maps.LatLng(37.5665, 126.9780));  // 만약 위치 접근에 실패하면 기본 좌표를 사용
+          this.searchPlaces(new window.kakao.maps.LatLng(37.5665, 126.9780));
         });
       } else {
         console.error("This browser does not support Geolocation.");
@@ -138,10 +140,36 @@ export default {
       this.currentMarker = marker;   // 현재 마커를 상태에 저장합니다.
     },
 
-    formatDistance(distance) {
-      if (!distance) return '알 수 없음';
-      const kmDistance = distance / 1000; // m를 km로 변환
-      return `${kmDistance.toFixed(2)} km`; // 소수점 둘째자리까지 반올림
+    // kakao.maps.geometry 안되서 계산 따로
+    getDistanceFromLatLonInKm(lat1, lon1, lat2, lon2) {
+      const R = 6371; // 지구의 반경 (킬로미터)
+      const dLat = this.deg2rad(lat2 - lat1);
+      const dLon = this.deg2rad(lon2 - lon1);
+      const a =
+          Math.sin(dLat/2) * Math.sin(dLat/2) +
+          Math.cos(this.deg2rad(lat1)) * Math.cos(this.deg2rad(lat2)) *
+          Math.sin(dLon/2) * Math.sin(dLon/2)
+      ;
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+      const distance = R * c; // 거리 (킬로미터)
+      return distance;
+    },
+
+    deg2rad(deg) {
+      return deg * (Math.PI/180);
+    },
+
+    formatDistance(placeLocation) {
+      if (!this.currentUserLocation || !placeLocation || !placeLocation.y || !placeLocation.x) return '알 수 없음';
+
+      const distance = this.getDistanceFromLatLonInKm(
+          this.currentUserLocation.getLat(),
+          this.currentUserLocation.getLng(),
+          placeLocation.y,
+          placeLocation.x
+      );
+
+      return `${distance.toFixed(2)} km`; // 소수점 둘째자리까지 반올림
     },
     changePage(page) {
       this.currentPage = page;
