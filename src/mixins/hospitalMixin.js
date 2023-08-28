@@ -39,6 +39,7 @@ export default {
 
             try {
                 const result = await s3.upload(params).promise();
+                console.log(result)
                 return result.Location; // 업로드된 이미지의 URL 반환
             } catch (error) {
                 alert("이미지 등록에 실패했습니다.")

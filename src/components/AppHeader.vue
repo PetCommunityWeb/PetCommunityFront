@@ -1,6 +1,10 @@
 <template>
   <v-app-bar app color="blue accent-4">
-    <v-toolbar-title className="white--text">회사명/로고</v-toolbar-title>
+    <v-toolbar-title className="white--text">
+      <router-link to="/" class="toolbar-title-link">
+        Pet병
+      </router-link>
+    </v-toolbar-title>
 
     <v-spacer></v-spacer>
 
@@ -28,22 +32,19 @@ export default {
   },
   methods: {
     ...mapActions(['logout']),
-    performLogout() {
-      this.logout();
-    }
   }
 };
 </script>
-
-
-
-
-
-
-
-
 <style scoped>
-.v-btn:hover {
-  background-color: rgba(255, 255, 255, 0.1) !important;
+.toolbar-title-link {
+  text-decoration: none; /* 밑줄 제거 */
+  color: white; /* 텍스트 색상 */
+  font-weight: bold; /* 글씨 두께 */
+  font-size: 1.5rem; /* 글씨 크기 */
+  transition: color 0.3s ease; /* 색상 전환 효과 */
+}
+
+.toolbar-title-link:hover {
+  color: rgba(255, 255, 255, 0.7); /* 마우스 오버 시 색상 */
 }
 </style>
