@@ -4,11 +4,19 @@
     <div class="content-wrapper">
       <div id="kakao-map"></div>
       <div class="hospital-list">
-        <div class="hospital" v-for="hospital in hospitals" :key="hospital.id">
-          <h3>{{ hospital.name }}</h3>
-          <p>주소: {{ hospital.address }}</p>
-          <!-- 병원에 대한 추가 정보를 여기에 표시하실 수 있습니다. -->
-        </div>
+        <v-card v-for="hospital in visibleHospitals" :key="hospital.id" class="mb-5">
+          <img :src="hospital.imageUrl"  alt="병원 이미지" class="hospital-image"> <!-- 병원 이미지 추가 -->
+          <v-card-title>{{ hospital.name }}</v-card-title>
+          <v-card-subtitle>{{ hospital.address }}</v-card-subtitle>
+          <v-card-text>
+            전화번호: {{ hospital.phoneNumber }}<br>
+            진료과목: {{ hospital.subjectEnums.join(', ') }}<br>
+            진료동물: {{ hospital.speciesEnums.join(', ') }}
+          </v-card-text>
+          <v-card-actions>
+            <v-btn color="primary" text :to="`/hospital/${hospital.id}`">자세히</v-btn>
+          </v-card-actions>
+        </v-card>
       </div>
     </div>
   </div>
@@ -21,14 +29,39 @@ export default {
   data() {
     return {
       hospitals: [],
-      map: null  // 맵 객체를 저장할 변수
+      visibleHospitals: [],  // 화면에 표시될 병원들의 배열
+      map: null
     };
   },
   mounted() {
     this.fetchHospitalData();
     this.initMap();
+    window.kakao.maps.event.addListener(this.map, 'bounds_changed', this.updateVisibleHospitals);
+    document.addEventListener('routeToHospital', this.handleRouteEvent);
+  },
+  beforeDestroy() {
+    // 이벤트 리스너 제거
+    document.removeEventListener('routeToHospital', this.handleRouteEvent);
   },
   methods: {
+    handleRouteEvent(event) {
+      const hospitalId = event.detail.hospitalId;
+      this.$router.push({ path: `/hospital/${hospitalId}` });
+    },
+    updateVisibleHospitals() {
+      const bounds = this.map.getBounds();
+      const swLatLng = bounds.getSouthWest(); // 남서쪽 좌표
+      const neLatLng = bounds.getNorthEast(); // 북동쪽 좌표
+
+      this.visibleHospitals = this.hospitals.filter(hospital => {
+        return (
+            hospital.latitude >= swLatLng.getLat() &&
+            hospital.latitude <= neLatLng.getLat() &&
+            hospital.longitude >= swLatLng.getLng() &&
+            hospital.longitude <= neLatLng.getLng()
+        );
+      });
+    },
     fetchHospitalData() {
       axios.get("/hospitals")
           .then(response => {
@@ -68,13 +101,51 @@ export default {
           position: markerPosition
         });
         marker.setMap(this.map);
+
+        // CustomOverlay에 표시될 내용을 설정합니다.
+        const overlayContent = `
+              <div class="custom-overlay">
+                  <strong>${hospital.name}</strong><br>
+                  주소: ${hospital.address}<br>
+                  전화번호: ${hospital.phoneNumber}<br>
+                  <button data-id="${hospital.id}" onclick="routeToHospitalDetail(event)">자세히</button>
+              </div>`;
+
+        const overlay = new window.kakao.maps.CustomOverlay({
+          content: overlayContent,
+          position: markerPosition,
+          yAnchor: 1.5  // Marker의 위에 위치하도록 조절합니다.
+        });
+
+        window.kakao.maps.event.addListener(marker, 'click', () => {
+          // 기존에 표시된 overlay를 제거합니다.
+          overlay.setMap(overlay.getMap() ? null : this.map);
+        });
       });
-    }
-  }
+    },
+  },
 }
+window.routeToHospitalDetail = function(event) {
+  const hospitalId = event.target.getAttribute('data-id');
+  const routeEvent = new CustomEvent('routeToHospital', {
+    detail: {
+      hospitalId: hospitalId
+    }
+  });
+  document.dispatchEvent(routeEvent);
+};
 </script>
 
-<style scoped>
+<style>
+.custom-overlay {
+  max-width: 300px;
+  padding: 10px;
+  background-color: #fff;  /* 흰색 배경 */
+  border: 1px solid #333;
+  border-radius: 5px;
+  font-size: 12px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);  /* 그림자 효과 추가 */
+}
 .map-container {
   display: flex;
   flex-direction: column;
@@ -99,7 +170,10 @@ export default {
   padding-left: 20px;
 }
 
-.hospital {
-  margin-bottom: 20px;
+.hospital-image {
+  width: 100%;
+  height: auto;
+  max-height: 150px; /* 원하는 높이로 설정할 수 있습니다. */
+  object-fit: cover; /* 이미지가 카드 크기에 맞게 조절됩니다. */
 }
 </style>

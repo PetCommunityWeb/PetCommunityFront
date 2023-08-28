@@ -39,7 +39,19 @@
         <v-row>
           <!-- Left side: Feed Detail -->
           <v-col cols="6">
-            <v-card-title>{{ feedDetail.username }}</v-card-title>
+            <v-card-title>
+              {{ feedDetail.username }}
+              <v-card-actions class="d-flex justify-end">
+                <!-- 피드 수정 -->
+                <v-btn icon @click="openEditFeedModal">
+                  <v-icon>mdi-pencil</v-icon>
+                </v-btn>
+                <!-- 피드 삭제 -->
+                <v-btn icon @click="deleteFeed(feedDetail.id)">
+                  <v-icon color="red">mdi-delete</v-icon>
+                </v-btn>
+              </v-card-actions>
+            </v-card-title>
             <v-img :src="feedDetail.imageUrl" max-height="300px" class="my-3 detailed-image"></v-img>
             <v-card-subtitle>{{ feedDetail.title }}</v-card-subtitle>
             <v-card-text>{{ feedDetail.content }}</v-card-text>
@@ -58,13 +70,30 @@
                   <v-list-item-title>
                     <v-icon small left>mdi-account-outline</v-icon>
                     {{ comment.username }}
+                    <v-btn icon small @click="startEditingComment(comment.id, comment.content)">
+                      <v-icon>mdi-pencil-circle</v-icon>
+                    </v-btn>
+                    <v-btn icon small class="ml-auto" @click="deleteComment(comment.id)">
+                      <v-icon color="red">mdi-close</v-icon>
+                    </v-btn>
                   </v-list-item-title>
                   <v-list-item-subtitle>{{ comment.content }}</v-list-item-subtitle>
                 </v-list-item-content>
                 <v-divider></v-divider>
               </v-list-item-group>
             </v-list>
+
             <v-textarea
+                v-if="editingCommentId"
+                label="댓글을 편집해 주세요"
+                v-model="newCommentContent"
+                class="mt-3"
+                rows="2"
+            ></v-textarea>
+            <v-btn v-if="editingCommentId" text color="primary" @click="editComment">저장</v-btn>
+
+            <v-textarea
+                v-else
                 label="댓글을 작성해 주세요"
                 v-model="newCommentContent"
                 class="mt-3"
@@ -73,6 +102,32 @@
             <v-btn text color="primary" @click="postComment(feedDetail.id)">확인</v-btn>
           </v-col>
         </v-row>
+
+        <!-- 피드 수정을 위한 모달 -->
+        <v-dialog v-model="editFeedDialog" max-width="600px">
+          <v-card>
+            <v-card-title>피드 수정</v-card-title>
+            <v-card-text>
+              <v-text-field
+                  label="제목을 수정하세요"
+                  v-model="editTitle"
+              ></v-text-field>
+
+              <v-textarea
+                  label="내용을 수정하세요"
+                  v-model="editContent"
+                  rows="3"
+                  auto-grow
+              ></v-textarea>
+
+              <v-file-input label="사진 변경" accept="image/*" v-model="editSelectedImage"></v-file-input>
+            </v-card-text>
+            <v-card-actions>
+              <v-btn text @click="editFeedDialog = false">취소</v-btn>
+              <v-btn text color="primary" @click="editFeed">수정</v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
 
         <!-- Close Button -->
         <v-card-actions>
@@ -127,7 +182,12 @@ export default {
       selectedImage: null,
       feeds: [],  // 피드 목록 저장용
       feedDetail: {},  // 선택된 피드의 상세 정보
-      newCommentContent: '' // 사용자가 작성할 댓글 내용
+      newCommentContent: '', // 사용자가 작성할 댓글 내용
+      editingCommentId: null, // 현재 수정 중인 댓글의 ID
+      editFeedDialog: false,
+      editTitle: '',
+      editContent: '',
+      editSelectedImage: null
     };
   },
   methods: {
@@ -202,11 +262,9 @@ export default {
         alert('댓글 내용을 입력해주세요.');
         return;
       }
-
       const data = {
         content: this.newCommentContent,
       };
-
       try {
         const response = await axios.post(`/comments/${feedId}`, data);
         const newComment = {
@@ -215,7 +273,7 @@ export default {
         };
         this.feedDetail.comments.push(newComment);
         this.newCommentContent = ''; // 댓글 입력 초기화
-        // this.showFeedDetail(feedId); // 댓글 작성 후 피드 상세 정보 다시 로드
+        this.fetchFeeds(); // 컴포넌트가 생성될 때 피드를 로드
       } catch (error) {
         console.error("Error posting comment:", error);
         alert('댓글 작성 중 오류가 발생했습니다. 다시 시도해 주세요.');
@@ -229,21 +287,122 @@ export default {
         // 직접 likeCount 증가 or 감소
         if (response.data.msg === "성공") {
           this.feedDetail.likeCount += 1;
+          this.fetchFeeds(); // 컴포넌트가 생성될 때 피드를 로드
         }
         else if (response.data.msg === "취소") {
           this.feedDetail.likeCount -= 1;
+          this.fetchFeeds(); // 컴포넌트가 생성될 때 피드를 로드
         }
         else {
-          console.log(response.data)
-          alert(response.data.msg)
+          alert(response.data.msg);
         }
         // this.showFeedDetail(feedId);  // 좋아요 후 피드 상세 정보 다시 로드
       } catch (error) {
-        console.error("Error posting like:", error);
         alert('좋아요 중 오류가 발생했습니다. 다시 시도해 주세요.');
       }
     },
 
+    // 피드 수정 모달 열기
+    openEditFeedModal() {
+      this.editFeedDialog = true;
+      this.editTitle = this.feedDetail.title;
+      this.editContent = this.feedDetail.content;
+    },
+
+    // 피드 수정 로직
+    async editFeed() {
+      if (this.editSelectedImage) {
+        const imageUrl = await this.uploadImageToS3(this.editSelectedImage);
+        const data = {
+          title: this.editTitle,
+          content: this.editContent,
+          imageUrl: imageUrl
+        };
+        try {
+          const response = await axios.put(`/feeds/${this.feedDetail.id}`, data);
+          if (response.data.statusCode === 200) {
+            this.feedDetail = response.data;
+            this.fetchFeeds(); // 피드 목록 갱신
+            this.editFeedDialog = false;
+            this.feedDetailDialog = false; // 모달 열기
+          }
+          else {
+            alert(response.data.msg);
+          }
+        } catch (error) {
+          alert('피드 수정 중 오류가 발생했습니다. 다시 시도해 주세요.');
+        }
+      }
+    },
+
+    // feed 삭제
+    async deleteFeed(feedId) {
+      try {
+        const response = await axios.delete(`/feeds/${feedId}`);
+        if (response.data.statusCode === 200) {
+          this.feedDetailDialog = false;
+          this.feeds = this.feeds.filter(feed => feed.id !== feedId); // 목록에서 해당 피드 제거
+        }
+        else {
+          alert(response.data.msg);
+          this.feedDetailDialog = false;
+        }
+      } catch (error) {
+        alert('피드 삭제 중 오류가 발생했습니다. 다시 시도해 주세요.');
+      }
+    },
+
+    // 댓글 삭제
+    async deleteComment(commentId) {
+      try {
+        const response = await axios.delete(`/comments/${commentId}`);
+        if (response.data.statusCode === 200) {
+          this.feedDetail.comments = this.feedDetail.comments.filter(comment => comment.id !== commentId);
+        }
+        else {
+          alert(response.data.msg);
+        }
+      } catch (error) {
+        alert('댓글 삭제 중 오류가 발생했습니다. 다시 시도해 주세요.');
+      }
+    },
+
+    // 댓글 수정 모드 시작
+    startEditingComment(id, content) {
+      this.editingCommentId = id;
+      this.newCommentContent = content;
+    },
+
+    // 댓글 수정 완료 및 서버에 전송
+    async editComment() {
+      if (!this.newCommentContent.trim()) {
+        alert('댓글 내용을 입력해주세요.');
+        return;
+      }
+
+      const data = {
+        content: this.newCommentContent,
+      };
+
+      try {
+        const response = await axios.put(`/comments/${this.editingCommentId}`, data);
+        if (response.data.statusCode === 200) {
+          const comment = this.feedDetail.comments.find(comment => comment.id === this.editingCommentId);
+          if (comment) {
+            // 찾은 댓글의 content 값을 수정하여 업데이트
+            comment.content = this.newCommentContent;
+          }
+        }
+        else {
+          alert(response.data.msg);
+        }
+        this.editingCommentId = null; // 수정 모드 종료
+        this.newCommentContent = ''; // 댓글 입력 초기화
+      } catch (error) {
+        console.error("Error editing comment:", error);
+        alert('댓글 수정 중 오류가 발생했습니다. 다시 시도해 주세요.');
+      }
+    },
   },
   created() {
     this.fetchFeeds(); // 컴포넌트가 생성될 때 피드를 로드
