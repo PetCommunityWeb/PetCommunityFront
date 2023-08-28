@@ -37,7 +37,8 @@ export default {
       placesInfo: [],
       itemsPerPage: 4,  // 페이지당 표시할 항목의 수
       currentPage: 1,    // 현재 페이지 번호
-      currentUserLocation: null  // 사용자의 현재 위치를 저장하기 위한 변수
+      currentUserLocation: null,  // 사용자의 현재 위치를 저장하기 위한 변수
+      markers: []  // 모든 마커를 추적하는 배열을 추가
     };
   },
   // 샵 페이지 계산
@@ -93,6 +94,12 @@ export default {
     searchPlaces(location) {
       const places = new window.kakao.maps.services.Places();
 
+      // 이전 마커를 모두 제거하는 코드를 추가합니다.
+      for (let i = 0; i < this.markers.length; i++) {
+        this.markers[i].setMap(null);
+      }
+      this.markers = [];
+
       places.keywordSearch("애견샵", (result, status) => {
         if (status === window.kakao.maps.services.Status.OK) {
           this.placesInfo = result; // 검색된 결과를 placesInfo에 저장
@@ -111,6 +118,9 @@ export default {
         map: this.map,
         position: new window.kakao.maps.LatLng(place.y, place.x)
       });
+
+      // 새 마커를 추적 배열에 추가합니다.
+      this.markers.push(marker);
 
       window.kakao.maps.event.addListener(marker, 'click', () => {
         if (this.isInfoWindowOpen && this.currentMarker === marker) {  // 이미 infoWindow가 열려있고, 현재 마커가 같다면
