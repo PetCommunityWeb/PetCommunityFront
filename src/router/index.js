@@ -14,6 +14,7 @@ import LoginView from '@/views/LoginView.vue';
 import MyPage from '@/views/MyPage.vue';
 import SignUp from "@/views/SignUp";
 import HospitalManagement from "@/views/HospitalManagement";
+import HospitalDetail from "@/views/HospitalDetail";
 
 Vue.use(Router);
 Vue.use(Vuex)
@@ -69,6 +70,11 @@ const routes = [
       component: HospitalManagement
     },
     {
+        path: '/hospital/:id',
+        name: 'HospitalDetail',
+        component: HospitalDetail
+    },
+    {
         path: '*',  // 기본 경로 설정
         redirect: '/find-hospital'
     }
@@ -76,57 +82,7 @@ const routes = [
 
 const router = new Router({
     mode: 'history',
-    routes: [
-        {
-            path: '/find-hospital',
-            name: 'FindHospital',
-            component: FindHospital
-        },
-        {
-            path: '/realtime-consult',
-            name: 'RealtimeConsult',
-            component: RealtimeConsult
-        },
-        {
-            path: '/community',
-            name: 'Community',
-            component: Community,
-            children: [
-                {
-                    path: 'feed',
-                    component: FeedBoard
-                },
-                {
-                    path: 'tip',
-                    component: TipBoard
-                }
-            ]
-        },
-        {
-            path: '/pet-service',
-            name: 'PetService',
-            component: PetService,
-        },
-        {
-            path: '/login',
-            name: 'LoginView',
-            component: LoginView
-        },
-        {
-            path: '/signup',
-            name: 'SignUp',
-            component: SignUp
-        },
-        {
-            path: '/mypage',
-            name: 'MyPage',
-            component: MyPage
-        },
-        {
-            path: '*',  // 기본 경로 설정
-            redirect: '/find-hospital'
-        }
-    ]
+    routes
 });
 
 router.beforeEach((to, from, next) => {
@@ -135,6 +91,7 @@ router.beforeEach((to, from, next) => {
         .then(response => {
             const user = response.data;
             console.log(user)
+            store.commit('setId', user.id)
             store.commit('setUserRole', user.role);
             store.commit('setNickname', user.nickname);
             store.commit('setImageUrl', user.imageUrl);

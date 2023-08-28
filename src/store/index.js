@@ -6,12 +6,16 @@ Vue.use(Vuex);
 
 export default new Vuex.Store({
     state: {
+        id: null,
         role: null,
         nickname: null,
         email: null,
         imageUrl: null
     },
     mutations: {
+        setId(state, id) {
+          state.id = id;
+        },
         setUserRole(state, role) {
             state.role = role;
         },

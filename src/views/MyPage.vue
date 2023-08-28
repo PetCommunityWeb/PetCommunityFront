@@ -14,7 +14,7 @@ export default {
   name: "MyPage",
   computed: {
     ...mapState(['nickname', 'email', 'imageUrl', 'role'])
-  }
+  },
 }
 </script>
 
