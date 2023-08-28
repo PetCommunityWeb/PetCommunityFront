@@ -7,7 +7,7 @@
           <v-icon left small>mdi-dog</v-icon>
           {{ place.place_name }}
         </strong>
-        <p class="place-details">`
+        <p class="place-details">
           카테고리: <span class="place-category">{{ place.category_name }}</span><br>
           연락처: <span class="place-phone">{{ place.phone ? place.phone : '없음' }}</span><br>
           주소: <span class="place-address">{{ place.address_name }}</span><br>
