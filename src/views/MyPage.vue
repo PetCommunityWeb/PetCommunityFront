@@ -62,17 +62,23 @@
                         <h1>내 정보
                             <v-btn @click="openDialog">내 정보 수정하기</v-btn>
                         </h1>
+                        <!--                        <p>로그인 ID: {{ user.username }}</p>-->
                         <p>이름: {{ user.nickname }}</p>
                         <p>이메일: {{ user.email }}</p>
-                        <p>내 사진</p>
+                        <p>내 소개: {{ user.introduction }}</p>
+                        <p>내 사진(200px * 300px 권장)</p>
                         <!-- 이미지 표시 -->
                         <v-img :src="user.imageUrl" alt="유저 이미지" height="200" width="300"></v-img>
-                        <p>내 소개: {{ user.introduction }}</p>
+
                     </div>
 
                     <div id=document>
-                        <p>내가 좋아요 한 피드</p>
-                        <p>내가 단 댓글</p>
+                        <h2>내가 작성한 피드</h2>
+                        <ul>
+                            <li v-for="feed in myFeed" :key="feed.id">
+                                <router-link :to="'/feed/' + feed.id">{{ feed.title }}</router-link>
+                            </li>
+                        </ul>
                     </div>
                 </v-list>
             </v-tab-item>
@@ -111,7 +117,7 @@
                 <v-card-title>내 정보 수정</v-card-title>
                 <v-card-text>
                     <v-text-field v-model="editedUser.nickname" label="이름"></v-text-field>
-                    <v-text-field v-model="editedUser.email" label="이메일"></v-text-field>
+                    <!--                    <v-text-field v-model="editedUser.email" label="이메일"></v-text-field>-->
                     <v-textarea v-model="editedUser.introduction" label="소개"></v-textarea>
                     <v-file-input label="프로필 사진 업로드" accept="image/*" v-model="selectedImage"></v-file-input>
 
@@ -123,17 +129,25 @@
                 </v-card-actions>
             </v-card>
         </v-dialog>
+
+        <!-- 게시글 상세 페이지 컴포넌트 -->
+        <FeedDetail v-if="selectedFeed" :feed="selectedFeed"/>
     </div>
+
 </template>
 
 
 <script>
 import axios from '@/axios/axios-instance'; // 필요하다면 경로를 수정하세요
 import {mapState} from 'vuex';
-
 import AWS from "aws-sdk";
+import FeedDetail from "@/components/FeedDetail.vue";
 
 export default {
+
+    components: {
+        FeedDetail
+    },
     name: "MyPage",
     data() {
         return {
@@ -156,10 +170,7 @@ export default {
             currentReservationNum: null,
 
             user: {
-                nickname: '',     // 사용자 닉네임
-                email: '',        // 사용자 이메일
-                imageUrl: '',     // 사용자 이미지 URL
-                introduction: '', // 사용자 소개
+                // 사용자 정보 초기화
             },
             editedUser: {
                 nickname: '',
@@ -168,15 +179,21 @@ export default {
                 imageUrl: ''
             },
             selectedImage: null,
-            editProfileDialog: false
+            editProfileDialog: false,
 
-        }
+            myFeed: [], // 내가 작성한 글 목록
+            selectedFeed: null, // 선택한 게시글
+        };
+
 
     },
+
     computed: {
-        ...mapState(['username', 'nickname', 'email', 'imageUrl', 'role']),
+        ...
+            mapState(['username', 'nickname', 'email', 'imageUrl', 'role']),
 
-    },
+    }
+    ,
     methods: {
         fetchReservations() {
             axios.get("/reservations")
@@ -186,13 +203,15 @@ export default {
                 .catch(error => {
                     console.error("예약을 가져오는 데 실패했습니다:", error);
                 });
-        },
+        }
+        ,
         isBeforeTomorrow(reservationDate) {
             const today = new Date().toISOString().slice(0, 10);
             const tomorrow = new Date(today);
             tomorrow.setDate(tomorrow.getDate() + 1);
             return reservationDate >= tomorrow.toISOString().slice(0, 10);
-        },
+        }
+        ,
         cancelReservation(reservationNum) {
             axios.delete(`/reservations/${reservationNum}`)
                 .then(response => {
@@ -204,18 +223,21 @@ export default {
                 .catch(error => {
                     console.error("예약 취소 에러:", error);
                 });
-        },
+        }
+        ,
         isPastReservation(reservationDate, startTime) {
             const reservationDateTime = new Date(`${reservationDate}T${startTime}`);
             return new Date() > reservationDateTime;
-        },
+        }
+        ,
         resetReviewData() {
             this.reviewData.title = '';
             this.reviewData.content = '';
             this.reviewData.rate = 5;
             this.reviewData.reservationNum = null; // 이 부분 수정
             this.reviewData.reviewId = null;
-        },
+        }
+        ,
         saveReview() {
             if (this.editingReview) {
                 axios.put(`/reviews/${this.reviewData.reviewId}`, this.reviewData)
@@ -238,13 +260,15 @@ export default {
                     });
             }
             this.reviewDialog = false;
-        },
+        }
+        ,
         writeReview(reservationNum) {
             this.editingReview = false;
             this.currentReservationNum = reservationNum;
             this.reviewData.reservationNum = reservationNum; // 여기서 먼저 설정
             this.reviewDialog = true;
-        },
+        }
+        ,
         updateReview(reservation) {
             this.editingReview = true;
             this.currentReservationNum = reservation.reservationNum;
@@ -255,7 +279,8 @@ export default {
             this.reviewData.rate = reservation.review.rate;
             // 추가 필드를 채워주세요 (예: imageUrl)
             this.reviewDialog = true;
-        },
+        }
+        ,
         deleteReview(reviewId) { // 매개변수 reviewId 추가
             if (confirm('정말로 리뷰를 삭제하시겠습니까?')) {
                 axios.delete(`/reviews/${reviewId}`) // reviewId 사용
@@ -267,47 +292,49 @@ export default {
                         console.error("리뷰 삭제 에러:", error);
                     });
             }
-        },
+        }
+        ,
 
         // 프로필 수정 관련 스크립트
         openDialog() {
-            this.editedUser = {...this.user};
+            this.editedUser = {
+                nickname: this.user.nickname,
+                email: this.user.email,
+                introduction: this.user.introduction
+            };
             this.editProfileDialog = true;
-        },
+        }
+        ,
         closeDialog() {
             this.editProfileDialog = false;
-        },
+        }
+        ,
         async saveChanges() {
-            // 수정된 사용자 데이터 저장
-            this.user = {...this.editedUser};
-
-            let imageUrl = '';
             if (this.selectedImage) {
                 try {
-                    imageUrl = await this.uploadImageToS3(this.selectedImage);
+                    // 이미지 업로드 후 URL 받아오기
+                    this.editedUser.imageUrl = await this.uploadImageToS3(this.selectedImage); // 업로드된 이미지 URL 적용
                 } catch (error) {
                     console.error('Error uploading image:', error);
                     return;
                 }
-
-                this.user.nickname = this.editedUser.nickname;
-                this.user.email = this.editedUser.email;
-                this.user.introduction = this.editedUser.introduction;
-                this.user.imageUrl = imageUrl;
-
-                // 서버로 수정된 데이터 전송
-                axios.put('/users/profile', this.editedUser) // 백엔드 API 엔드포인트에 맞게 수정
-                    .then(response => {
-                        console.log('User data updated:', response.data);
-                    })
-                    .catch(error => {
-                        console.error('Error updating user data:', error);
-                    });
-
-                this.editProfileDialog = false;
             }
-        },
 
+            // 수정된 사용자 데이터 저장
+            this.user = {...this.editedUser};
+
+            // 서버로 수정된 데이터 전송
+            axios.put('/users/profile', this.editedUser) // 백엔드 API 엔드포인트에 맞게 수정
+                .then(response => {
+                    console.log('User data updated:', response.data);
+                })
+                .catch(error => {
+                    console.error('Error updating user data:', error);
+                });
+
+            this.editProfileDialog = false;
+        }
+        ,
         // S3에 사진 업로드
         async uploadImageToS3(file) {
             AWS.config.update({
@@ -318,21 +345,39 @@ export default {
             const s3 = new AWS.S3();
             const params = {
                 Bucket: process.env.VUE_APP_AWS_BUCKET,
-                Key: file.name, // 파일 이름
-                Body: file, // 실제 파일 객체
-                ACL: 'public-read' // 파일이 공개적으로 읽을 수 있도록 설정
+                Key: file.name,
+                Body: file,
+                ACL: 'public-read'
             };
 
             try {
                 const result = await s3.upload(params).promise();
-                return result.Location; // 업로드된 이미지의 URL 반환
+                return result.Location;
             } catch (error) {
                 console.error("S3 Upload Error:", error);
+                throw error;
             }
-        },
-        // S3에 올린 사진의 주소를 반환
+        }
+        ,
 
-    },
+        //피드 제목들 불러오기
+        async fetchMyFeeds() {
+            try {
+                // 백엔드 API 호출하여 사용자가 작성한 글 목록 가져오기
+                const response = await axios.get('/feeds'); // API 엔드포인트에 맞게 수정
+                this.myFeed = response.data; // 가져온 글 목록을 데이터에 저장
+            } catch (error) {
+                console.error('Error fetching user posts:', error);
+            }
+        }
+        ,
+        // 게시글 선택 시 호출되는 함수
+        selectFeed(feed) {
+            this.selectedFeed = feed;
+        },
+    }
+    ,
+
     mounted() {
         this.fetchReservations();
 
@@ -344,6 +389,9 @@ export default {
             .catch(error => {
                 console.error('Error fetching user data:', error);
             });
+
+        this.fetchMyFeeds();
+
     }
 
 
