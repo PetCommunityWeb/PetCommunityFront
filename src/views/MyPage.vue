@@ -41,7 +41,6 @@
                     </v-list-item-group>
                 </v-list>
             </v-tab-item>
-
             <v-tab-item key="notifications">
                 <v-list>
                     <v-list-item-group v-for="notification in notifications" :key="notification.id">
@@ -54,7 +53,6 @@
                     </v-list-item-group>
                 </v-list>
             </v-tab-item>
-
 
             <!-- 나의 프로필-->
             <v-tab-item key="profile">
@@ -72,42 +70,11 @@
                         <p>내 소개: {{ user.introduction }}</p>
                     </div>
 
-
                     <div id=document>
                         <p>내가 좋아요 한 피드</p>
                         <p>내가 단 댓글</p>
                     </div>
                 </v-list>
-
-                <!--내 정보 수정 다이얼로그-->
-                <v-dialog v-model="dialog" max-width="500px">
-                    <v-card>
-                        <v-card-title>내 정보 수정</v-card-title>
-                        <v-card-text>
-                            <v-text-field v-model="editedUser.nickname" label="이름"></v-text-field>
-                            <v-text-field v-model="editedUser.email" label="이메일"></v-text-field>
-                            <v-textarea v-model="editedUser.introduction" label="소개"></v-textarea>
-                        </v-card-text>
-                        <v-card-actions>
-                            <v-btn color="primary" @click="saveChanges">저장</v-btn>
-                            <v-btn @click="closeDialog">취소</v-btn>
-                        </v-card-actions>
-                    </v-card>
-                </v-dialog>
-
-                <!--                <v-dialog v-model="upload" max-width="600px">-->
-                <!--                    <v-card>-->
-                <!--                        <v-card-text>-->
-                <!--                            &lt;!&ndash; 사진 선택 &ndash;&gt;-->
-                <!--                            <v-file-input label="사진 등록" accept="image/*" v-model="selectedImage"></v-file-input>-->
-                <!--                        </v-card-text>-->
-                <!--                        <v-card-actions>-->
-                <!--                            <v-btn text @click="dialog = false">취소</v-btn>-->
-                <!--                            <v-btn text color="primary" @click="uploadImage">업로드</v-btn>-->
-                <!--                        </v-card-actions>-->
-                <!--                    </v-card>-->
-                <!--                </v-dialog>-->
-
             </v-tab-item>
         </v-tabs>
         <!-- 리뷰 다이얼로그 -->
@@ -134,6 +101,25 @@
                 <v-card-actions>
                     <v-btn text @click="reviewDialog = false">취소</v-btn>
                     <v-btn color="blue" text @click="saveReview">저장</v-btn>
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
+
+        <!--내 정보 수정 다이얼로그-->
+        <v-dialog v-model="editProfileDialog" max-width="500px">
+            <v-card>
+                <v-card-title>내 정보 수정</v-card-title>
+                <v-card-text>
+                    <v-text-field v-model="editedUser.nickname" label="이름"></v-text-field>
+                    <v-text-field v-model="editedUser.email" label="이메일"></v-text-field>
+                    <v-textarea v-model="editedUser.introduction" label="소개"></v-textarea>
+                    <v-file-input label="프로필 사진 업로드" accept="image/*" v-model="selectedImage"></v-file-input>
+
+                </v-card-text>
+
+                <v-card-actions>
+                    <v-btn color="primary" @click="saveChanges">저장</v-btn>
+                    <v-btn @click="closeDialog">취소</v-btn>
                 </v-card-actions>
             </v-card>
         </v-dialog>
@@ -178,9 +164,11 @@ export default {
             editedUser: {
                 nickname: '',
                 email: '',
-                introduction: ''
+                introduction: '',
+                imageUrl: ''
             },
-            dialog: false
+            selectedImage: null,
+            editProfileDialog: false
 
         }
 
@@ -283,26 +271,41 @@ export default {
 
         // 프로필 수정 관련 스크립트
         openDialog() {
-            this.editedUser = { ...this.user };
-            this.dialog = true;
+            this.editedUser = {...this.user};
+            this.editProfileDialog = true;
         },
         closeDialog() {
-            this.dialog = false;
+            this.editProfileDialog = false;
         },
-        saveChanges() {
+        async saveChanges() {
             // 수정된 사용자 데이터 저장
-            this.user = { ...this.editedUser };
+            this.user = {...this.editedUser};
 
-            // 서버로 수정된 데이터 전송
-            axios.put('/users/profile', this.editedUser) // 백엔드 API 엔드포인트에 맞게 수정
-                .then(response => {
-                    console.log('User data updated:', response.data);
-                })
-                .catch(error => {
-                    console.error('Error updating user data:', error);
-                });
+            let imageUrl = '';
+            if (this.selectedImage) {
+                try {
+                    imageUrl = await this.uploadImageToS3(this.selectedImage);
+                } catch (error) {
+                    console.error('Error uploading image:', error);
+                    return;
+                }
 
-            this.dialog = false;
+                this.user.nickname = this.editedUser.nickname;
+                this.user.email = this.editedUser.email;
+                this.user.introduction = this.editedUser.introduction;
+                this.user.imageUrl = imageUrl;
+
+                // 서버로 수정된 데이터 전송
+                axios.put('/users/profile', this.editedUser) // 백엔드 API 엔드포인트에 맞게 수정
+                    .then(response => {
+                        console.log('User data updated:', response.data);
+                    })
+                    .catch(error => {
+                        console.error('Error updating user data:', error);
+                    });
+
+                this.editProfileDialog = false;
+            }
         },
 
         // S3에 사진 업로드
