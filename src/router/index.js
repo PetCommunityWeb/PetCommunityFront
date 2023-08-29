@@ -2,8 +2,7 @@ import Vue from 'vue';
 import Vuex from 'vuex'
 import Router from 'vue-router';
 import axios from "@/axios/axios-instance";
-import store from '@/store';  // 스토어 임포트
-
+import store from '@/store'; // 스토어 임포트
 import FindHospital from '@/views/FindHospital.vue';
 import RealtimeConsult from '@/views/RealtimeConsult.vue';
 import ChatRoom from "@/views/ChatRoom";
@@ -16,7 +15,6 @@ import MyPage from '@/views/MyPage.vue';
 import SignUp from "@/views/SignUp";
 import HospitalManagement from "@/views/HospitalManagement";
 import HospitalDetail from "@/views/HospitalDetail";
-import FeedDetail from "@/components/FeedDetail.vue";
 
 Vue.use(Router);
 Vue.use(Vuex)
@@ -72,9 +70,9 @@ const routes = [
         component: MyPage
     },
     {
-      path: '/management',
-      name: 'Management',
-      component: HospitalManagement
+        path: '/management',
+        name: 'Management',
+        component: HospitalManagement
     },
     {
         path: '/hospital/:id',
@@ -85,11 +83,6 @@ const routes = [
         path: '*',  // 기본 경로 설정
         redirect: '/find-hospital'
     },
-    {
-        path: '/community/feed/:id',
-        name: 'FeedDetail',
-        component: FeedDetail
-    }
 ];
 
 

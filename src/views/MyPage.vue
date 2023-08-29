@@ -76,7 +76,7 @@
                         <h2>내가 작성한 피드</h2>
                         <ul>
                             <li v-for="feed in myFeed" :key="feed.id">
-                                <router-link :to="'/feed/' + feed.id">{{ feed.title }}</router-link>
+                                <button @click="showFeedDetail(feed.id)">{{ feed.title }}</button>
                             </li>
                         </ul>
                     </div>
@@ -132,6 +132,18 @@
 
         <!-- 게시글 상세 페이지 컴포넌트 -->
         <FeedDetail v-if="selectedFeed" :feed="selectedFeed"/>
+        <!-- 피드 상세 정보 모달 -->
+        <v-dialog v-model="feedDetailDialog">
+            <v-card>
+                <v-card-title>{{ feedDetail.title }}</v-card-title>
+                <v-card-text>{{ feedDetail.content }}</v-card-text>
+                <!-- 다른 피드 상세 내용을 여기에 추가 -->
+
+                <v-card-actions>
+                    <v-btn color="primary" @click="feedDetailDialog = false">닫기</v-btn>
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
     </div>
 
 </template>
@@ -183,6 +195,8 @@ export default {
 
             myFeed: [], // 내가 작성한 글 목록
             selectedFeed: null, // 선택한 게시글
+            feedDetailDialog: false,
+            feedDetail: {}
         };
 
 
@@ -375,6 +389,15 @@ export default {
         selectFeed(feed) {
             this.selectedFeed = feed;
         },
+        async showFeedDetail(id) {
+            try {
+                const response = await axios.get(`/feeds/${id}`);
+                this.feedDetail = response.data;
+                this.feedDetailDialog = true; // 모달 열기
+            } catch (error) {
+                console.error("Error fetching feed detail:", error);
+            }
+        }
     }
     ,
 
