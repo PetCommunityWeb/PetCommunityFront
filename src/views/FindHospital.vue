@@ -5,9 +5,13 @@
       <div id="kakao-map"></div>
       <div class="hospital-list">
         <v-card v-for="hospital in visibleHospitals" :key="hospital.id" class="mb-5">
-          <img :src="hospital.imageUrl"  alt="병원 이미지" class="hospital-image"> <!-- 병원 이미지 추가 -->
+          <img :src="hospital.imageUrl || require('@/assets/logo.png')"  alt="병원 이미지" class="hospital-image">
           <v-card-title>{{ hospital.name }}</v-card-title>
           <v-card-subtitle>{{ hospital.address }}</v-card-subtitle>
+          <div class="rating-container">
+            <v-icon color="yellow" v-for="n in parseInt(averageRating(hospital))" :key="`full-${hospital.id}-${n}`">mdi-star</v-icon>
+            <v-icon color="yellow" v-if="averageRating(hospital) % 1 >= 0.5" :key="`half-${hospital.id}`">mdi-star-half</v-icon>
+          </div>
           <v-card-text>
             전화번호: {{ hospital.phoneNumber }}<br>
             진료과목: {{ hospital.subjectEnums.join(', ') }}<br>
@@ -44,6 +48,13 @@ export default {
     document.removeEventListener('routeToHospital', this.handleRouteEvent);
   },
   methods: {
+    averageRating(hospital) {
+      if (hospital.reviews && hospital.reviews.length > 0) {
+        const totalRating = hospital.reviews.reduce((sum, review) => sum + review.rate, 0);
+        return parseFloat((totalRating / hospital.reviews.length).toFixed(1));
+      }
+      return 0;
+    },
     handleRouteEvent(event) {
       const hospitalId = event.detail.hospitalId;
       this.$router.push({ path: `/hospital/${hospitalId}` });
@@ -137,6 +148,11 @@ window.routeToHospitalDetail = function(event) {
 </script>
 
 <style>
+.rating-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;  /* 별점을 중앙에 위치시킵니다. */
+}
 .custom-overlay {
   max-width: 300px;
   padding: 10px;

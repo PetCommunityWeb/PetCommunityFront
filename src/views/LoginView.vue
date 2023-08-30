@@ -30,6 +30,7 @@
 
 <script>
 import axios from "@/axios/axios-instance";
+import store from "@/store"; // Vuex 스토어를 임포트합니다.
 
 export default {
   name: "LoginView",
@@ -51,13 +52,26 @@ export default {
                   console.log(response.headers)
                   const accessToken = response.headers.get("authorization")
                   window.localStorage.setItem('accessToken', accessToken)
-
-                  // const refreshToken = response.headers.get("RefreshToken");
-                  // if (accessToken !== undefined && refreshToken !== undefined) {
-                  //   window.localStorage.setItem('accessToken', accessToken)
-                  //   Cookies.set("refreshToken", refreshToken)
-                  //   window.location.href = '/home'
-                  // }
+              // const refreshToken = response.headers.get("RefreshToken");
+              // if (accessToken !== undefined && refreshToken !== undefined) {
+              //   window.localStorage.setItem('accessToken', accessToken)
+              //   Cookies.set("refreshToken", refreshToken)
+              //   window.location.href = '/home'
+              // }
+              axios.get('/users/my-profile')
+                  .then(response => {
+                    const user = response.data;
+                    console.log(user)
+                    store.commit('setId', user.id)
+                    store.commit('setUsername', user.username)
+                    store.commit('setUserRole', user.role);
+                    store.commit('setNickname', user.nickname);
+                    store.commit('setImageUrl', user.imageUrl);
+                    store.commit('setEmail', user.email);
+                  })
+                  .catch(error => {
+                    console.error("Error checking user:", error);
+                  });
                   this.$router.push("/");
                 }
             )

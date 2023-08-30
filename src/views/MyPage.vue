@@ -174,6 +174,8 @@ export default {
     writeReview(reservationNum) {
       this.editingReview = false;
       this.currentReservationNum = reservationNum;
+      // 리뷰 데이터 초기화
+      this.resetReviewData();
       this.reviewData.reservationNum = reservationNum; // 여기서 먼저 설정
       this.reviewDialog = true;
     },

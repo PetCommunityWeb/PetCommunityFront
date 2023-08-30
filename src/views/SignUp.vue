@@ -30,7 +30,10 @@
                   required
                   v-model="email"
               ></v-text-field>
-
+              <v-radio-group v-model="isOwner">
+                <v-radio label="OWNER" value="true"></v-radio>
+                <v-radio label="USER" value="false"></v-radio>
+              </v-radio-group>
               <v-btn color="blue darken-1" dark @click="submitForm">회원가입</v-btn> <!-- 버튼 색상 변경 -->
             </v-form>
           </v-card-text>
@@ -50,7 +53,8 @@ export default {
       username: "",
       password: "",
       nickname: "",
-      email: ""
+      email: "",
+      isOwner: "false" // Default to 'false' or 'Not OWNER'
     };
   },
   methods: {
@@ -60,6 +64,7 @@ export default {
         password: this.password,
         nickname: this.nickname,
         email: this.email,
+        role: this.isOwner === "true" ? "OWNER" : "USER"
       }
       axios.post("/users/signup", userInfo)
           .then(response => {

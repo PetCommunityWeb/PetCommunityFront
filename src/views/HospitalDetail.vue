@@ -10,6 +10,10 @@
             <p>{{ hospital.introduction }}</p>
             <p><strong>전화번호:</strong> {{ hospital.phoneNumber }}</p>
           </v-card-text>
+          <div class="rating-container">
+            <v-icon color="yellow" v-for="n in parseInt(averageRating(hospital))" :key="`full-${hospital.id}-${n}`">mdi-star</v-icon>
+            <v-icon color="yellow" v-if="averageRating(hospital) % 1 >= 0.5" :key="`half-${hospital.id}`">mdi-star-half</v-icon>
+          </div>
           <v-card-actions>
             <v-chip v-for="species in hospital.speciesEnums" :key="species" small>{{ species }}</v-chip>
             <v-chip v-for="subject in hospital.subjectEnums" :key="subject" small outlined>{{ subject }}</v-chip>
@@ -63,6 +67,31 @@
             </v-col>
           </v-row>
         </v-card>
+        <v-col cols="12">
+          <v-card>
+            <v-card-title>리뷰 목록</v-card-title>
+            <v-divider></v-divider>
+            <v-list v-if="hospital.reviews && hospital.reviews.length">
+              <v-list-item-group>
+                <v-list-item v-for="review in hospital.reviews" :key="review.id">
+                  <v-list-item-avatar>
+                    <v-img :src="review.imageUrl" alt="Review Image"></v-img>
+                  </v-list-item-avatar>
+                  <v-list-item-content>
+                    <v-list-item-title>{{ review.title }}</v-list-item-title>
+                    <v-list-item-subtitle>{{ review.content }}</v-list-item-subtitle>
+                    <v-list-item-subtitle class="mb-2">작성자 : {{ review.nickname }}</v-list-item-subtitle>
+                  </v-list-item-content>
+                  <v-list-item-action>
+                    <v-rating v-model="review.rate" readonly></v-rating>
+                  </v-list-item-action>
+                </v-list-item>
+              </v-list-item-group>
+            </v-list>
+            <v-card-text v-else>아직 리뷰가 없습니다.</v-card-text>
+          </v-card>
+        </v-col>
+
       </v-col>
     </v-row>
 
@@ -85,7 +114,7 @@
           <img :src="editHospitalData.imageUrl" v-if="editHospitalData.imageUrl" alt="Selected Image" width="100%" />
           <v-col cols="12">
             <v-text-field type="text" v-model="editHospitalData.address" label="주소를 검색해주세요" readonly />
-            <button @click="openKakaoAddressSearch" style="border: 1px solid gray;">주소 검색</button>
+            <button @click="openKakaoAddressSearch" style="border: 1px solid rgb(128,128,128);">주소 검색</button>
           </v-col>
 <!--          <v-text-field label="병원 주소" v-model="editHospitalData.address"></v-text-field>-->
           <v-text-field label="전화번호" v-model="editHospitalData.phoneNumber"></v-text-field>
@@ -156,6 +185,13 @@ export default {
     }
   },
   methods: {
+    averageRating(hospital) {
+      if (hospital.reviews && hospital.reviews.length > 0) {
+        const totalRating = hospital.reviews.reduce((sum, review) => sum + review.rate, 0);
+        return parseFloat((totalRating / hospital.reviews.length).toFixed(1));
+      }
+      return 0;
+    },
     handleFileChange(file) {
       if (file) {
         // 이미지 파일 객체를 저장
@@ -182,6 +218,7 @@ export default {
         console.error('API 요청 중 오류 발생:', error);
         alert('예약 중 오류 발생');
       }
+      await this.created();
     },
     async fetchAvailableTimes() {
       try {
@@ -230,6 +267,7 @@ export default {
       try {
         const response = await axios.get(`/hospitals/${hospitalId}`);
         this.hospital = response.data;
+        console.log(this.hospital)
       } catch (error) {
         console.error("Failed to fetch hospital details:", error);
         // 에러 처리를 적절하게 하세요. 예: 사용자에게 오류 메시지 표시

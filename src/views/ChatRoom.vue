@@ -8,9 +8,12 @@
           </v-card-title>
           <v-card-text>
             <v-list two-line style="max-height: 300px; overflow-y: auto;" ref="messageList">
-              <v-list-item v-for="message in messages" :key="message.messageId">
+              <v-list-item v-for="message in messages" :key="message.messageId" :class="messageClass(message.sender)">
                 <v-list-item-content>
-                  <v-list-item-title>{{ message.message }}</v-list-item-title>
+                  <v-list-item-title>
+                    <span class="message-sender">{{ message.sender }}</span>
+                    {{ message.message }}
+                  </v-list-item-title>
                   <v-list-item-subtitle>{{ message.time }}</v-list-item-subtitle>
                 </v-list-item-content>
               </v-list-item>
@@ -34,7 +37,7 @@
 
 <script>
 import axios from "@/axios/axios-instance";
-import { mapState } from 'vuex';
+import {mapState} from 'vuex';
 
 export default {
   data() {
@@ -51,6 +54,10 @@ export default {
     })
   },
   methods: {
+    messageClass(sender) {
+      console.log(sender)
+      return sender === this.username ? 'my-message' : 'other-message';
+    },
     fetchData() {
       return axios.get(`/chat?uuid=${this.$route.params.uuid}`).then(response => {
         this.roomName = response.data.roomName;
@@ -96,6 +103,7 @@ export default {
     },
     addMessageToChat(messageDto) {
       this.messages.push({
+        sender: messageDto.sender,  // 이 부분을 추가하세요.
         message: messageDto.message,
         time: messageDto.time || new Date().toISOString(),
         messageId: Date.now()
@@ -134,4 +142,22 @@ export default {
 };
 </script>
 <style>
+.my-message {
+  background-color: yellow;
+  margin-left: auto;
+  border-radius: 10px 0 10px 10px;
+// 예: 오른쪽 상단 모서리를 둥글게
+}
+
+.other-message {
+  background-color: gray;
+  margin-right: auto;
+  border-radius: 0 10px 10px 10px;
+// 예: 왼쪽 상단 모서리를 둥글게
+}
+
+.message-sender {
+  font-weight: bold;
+  margin-right: 5px;
+}
 </style>
