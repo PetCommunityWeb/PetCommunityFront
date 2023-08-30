@@ -1,6 +1,5 @@
 import axios from 'axios';
 import Cookies from 'js-cookie';
-import { mapActions } from 'vuex';
 import store from '@/store';
 
 const instance = axios.create({
