@@ -48,8 +48,11 @@ export default new Vuex.Store({
             localStorage.removeItem('accessToken');
             console.log(localStorage.getItem('accessToken'))
             Cookies.remove('refreshToken');
-            // 루트('/') 경로로 이동
-            router.push('/');
+            router.push('/').catch(err => {
+                if (err.name !== 'NavigationDuplicated') {
+                    throw err;
+                }
+            });
         }
     }
 });
