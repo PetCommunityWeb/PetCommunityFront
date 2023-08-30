@@ -52,14 +52,13 @@ export default {
         const accessToken = response.headers['authorization'];
         const refreshToken = response.headers.get('refreshToken')
         if (accessToken && refreshToken) {
+          console.log("성공")
           window.localStorage.setItem('accessToken', accessToken);
           Cookies.set("refreshToken", refreshToken);
           await this.$router.push("/");
         }
       } catch (error) {
-        alert(error.response.data);
-        console.log(error.response.data);
-        console.log(error.response); // 추가적인 디버깅 정보
+        alert(error.response.data.msg);
       }
     },
     goToSignUp() {
