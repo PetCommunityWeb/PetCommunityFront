@@ -1,6 +1,7 @@
 import axios from 'axios';
 import Cookies from 'js-cookie';
-
+import { mapActions } from 'vuex';
+import store from '@/store';
 
 const instance = axios.create({
     baseURL:`${process.env.VUE_APP_SERVER_URL}`, // baseURL 설정
@@ -8,18 +9,36 @@ const instance = axios.create({
 });
 
 instance.interceptors.request.use(
-    (config) => {
-        // accessToken 추가
-        const accessToken = window.localStorage.getItem('accessToken');
+    async (config) => {
+        let accessToken = window.localStorage.getItem('accessToken');
+        const refreshToken = Cookies.get('refreshToken');
+
         if (accessToken) {
             config.headers['Authorization'] = accessToken;
         }
-        // refreshToken 추가
-        const refreshToken = Cookies.get('refreshToken');
+
         if (refreshToken) {
             config.headers['RefreshToken'] = refreshToken;
         }
+
         return config;
+    },
+    (error) => {
+        return Promise.reject(error);
+    }
+);
+
+instance.interceptors.response.use(
+    (response) => {
+        if (response.data.msg === "refreshToken이 만료되었습니다.") {
+            // alert(response.data.msg); 사용자가 refresh Token 관련 msg를 알 필요가 없다
+            store.dispatch('logout'); // 로그아웃 액션 호출
+        }
+        const newAccessToken = response.headers['authorization'];
+        if (newAccessToken) {
+            window.localStorage.setItem('accessToken', newAccessToken);
+        }
+        return response;
     },
     (error) => {
         return Promise.reject(error);

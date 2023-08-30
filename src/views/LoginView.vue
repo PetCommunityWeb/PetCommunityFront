@@ -30,6 +30,7 @@
 
 <script>
 import axios from "@/axios/axios-instance";
+import Cookies from 'js-cookie';
 import store from "@/store"; // Vuex 스토어를 임포트합니다.
 
 export default {
@@ -47,37 +48,29 @@ export default {
         password: this.password,
       };
       try {
-        await axios.post("/users/login", data)
+        const response = await axios.post("/users/login", data);
+        const accessToken = response.headers['authorization'];
+        const refreshToken = response.headers.get('refreshToken')
+        axios.get('/users/my-profile')
             .then(response => {
-                  console.log(response.headers)
-                  const accessToken = response.headers.get("authorization")
-                  window.localStorage.setItem('accessToken', accessToken)
-              // const refreshToken = response.headers.get("RefreshToken");
-              // if (accessToken !== undefined && refreshToken !== undefined) {
-              //   window.localStorage.setItem('accessToken', accessToken)
-              //   Cookies.set("refreshToken", refreshToken)
-              //   window.location.href = '/home'
-              // }
-              axios.get('/users/my-profile')
-                  .then(response => {
-                    const user = response.data;
-                    console.log(user)
-                    store.commit('setId', user.id)
-                    store.commit('setUsername', user.username)
-                    store.commit('setUserRole', user.role);
-                    store.commit('setNickname', user.nickname);
-                    store.commit('setImageUrl', user.imageUrl);
-                    store.commit('setEmail', user.email);
-                  })
-                  .catch(error => {
-                    console.error("Error checking user:", error);
-                  });
-                  this.$router.push("/");
-                }
-            )
+              const user = response.data;
+              console.log(user)
+              store.commit('setId', user.id)
+              store.commit('setUsername', user.username)
+              store.commit('setUserRole', user.role);
+              store.commit('setNickname', user.nickname);
+              store.commit('setImageUrl', user.imageUrl);
+              store.commit('setEmail', user.email);
+            })
+        if (accessToken && refreshToken) {
+          window.localStorage.setItem('accessToken', accessToken);
+          Cookies.set("refreshToken", refreshToken);
+          await this.$router.push("/");
+        }
       } catch (error) {
-        alert(error.response.data)
+        alert(error.response.data);
         console.log(error.response.data);
+        console.log(error.response); // 추가적인 디버깅 정보
       }
     },
     goToSignUp() {
