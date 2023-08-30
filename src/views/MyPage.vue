@@ -58,11 +58,17 @@
             <v-tab-item key="profile">
                 <v-list class="profile-section">
                     <!--프로필 수정 방식으로 만들어보기-->
-                    <!-- 프로필 수정 버튼 -->
-                    <v-btn class="edit-profile-button" @click="openDialog">
-                        내 정보 수정하기
-                    </v-btn>
 
+                    <v-row class="justify-space-between">
+                        <v-col cols="auto">
+                            <v-btn class="edit-profile-button" @click="openDialog">
+                                내 정보 수정하기
+                            </v-btn>
+                        </v-col>
+                        <v-col cols="auto">
+                            <v-btn class="delete-user">탈퇴하기</v-btn>
+                        </v-col>
+                    </v-row>
                     <v-divider></v-divider>
 
                     <!-- 프로필 정보 -->
