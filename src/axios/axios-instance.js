@@ -1,5 +1,7 @@
 import axios from 'axios';
 import Cookies from 'js-cookie';
+import { mapActions } from 'vuex';
+import store from '@/store';
 
 const instance = axios.create({
     baseURL:`${process.env.VUE_APP_SERVER_URL}`, // baseURL 설정
@@ -28,6 +30,10 @@ instance.interceptors.request.use(
 
 instance.interceptors.response.use(
     (response) => {
+        if (response.data.msg === "refreshToken이 만료되었습니다.") {
+            // alert(response.data.msg); 사용자가 refresh Token 관련 msg를 알 필요가 없다
+            store.dispatch('logout'); // 로그아웃 액션 호출
+        }
         const newAccessToken = response.headers['authorization'];
         if (newAccessToken) {
             window.localStorage.setItem('accessToken', newAccessToken);
