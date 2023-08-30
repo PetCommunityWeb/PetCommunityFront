@@ -232,8 +232,21 @@ export default {
     ...
         mapState(['username', 'nickname', 'email', 'imageUrl', 'role']),
 
-  }
-  ,
+  },
+  mounted() {
+    this.fetchReservations();
+
+    // 나의 프로필 데이터 가져옴
+    axios.get('/users/my-profile') // 백엔드 API 엔드포인트에 맞게 수정
+        .then(response => {
+          this.user = response.data; // API 응답으로부터 데이터를 user에 저장
+        })
+        .catch(error => {
+          console.error('Error fetching user data:', error);
+        });
+
+    this.fetchMyFeeds();
+  },
   methods: {
     fetchReservations() {
       axios.get("/reservations")
@@ -329,93 +342,6 @@ export default {
             });
       }
     },
-  },
-  mounted()
-  {
-    this.fetchReservations();
-
-    // 나의 프로필 데이터 가져옴
-    axios.get('/users/my-profile') // 백엔드 API 엔드포인트에 맞게 수정
-        .then(response => {
-          this.user = response.data; // API 응답으로부터 데이터를 user에 저장
-        })
-        .catch(error => {
-          console.error('Error fetching user data:', error);
-        });
-
-    this.fetchMyFeeds();
-  }
-  ,
-  isPastReservation(reservationDate, startTime) {
-    const reservationDateTime = new Date(`${reservationDate}T${startTime}`);
-    return new Date() > reservationDateTime;
-  }
-  ,
-  resetReviewData() {
-    this.reviewData.title = '';
-    this.reviewData.content = '';
-    this.reviewData.rate = 5;
-    this.reviewData.reservationNum = null; // 이 부분 수정
-    this.reviewData.reviewId = null;
-  }
-  ,
-  saveReview() {
-    if (this.editingReview) {
-      axios.put(`/reviews/${this.reviewData.reviewId}`, this.reviewData)
-          .then(() => {
-            alert('리뷰 수정이 완료되었습니다.');
-            this.fetchReservations();
-            this.resetReviewData();
-          })
-          .catch(error => {
-            console.error("리뷰 수정 에러:", error);
-          });
-    } else {
-      axios.post('/reviews', this.reviewData)
-          .then(() => {
-            alert('리뷰 작성이 완료되었습니다.');
-            this.fetchReservations();
-          })
-          .catch(error => {
-            console.error("리뷰 작성 에러:", error);
-          });
-    }
-    this.reviewDialog = false;
-  }
-  ,
-  writeReview(reservationNum) {
-    this.editingReview = false;
-    this.currentReservationNum = reservationNum;
-    this.reviewData.reservationNum = reservationNum; // 여기서 먼저 설정
-    this.reviewDialog = true;
-  }
-  ,
-  updateReview(reservation) {
-    this.editingReview = true;
-    this.currentReservationNum = reservation.reservationNum;
-    this.reviewData.reservationNum = reservation.reservationNum;
-    this.reviewData.reviewId = reservation.review.id;
-    this.reviewData.title = reservation.review.title;
-    this.reviewData.content = reservation.review.content;
-    this.reviewData.rate = reservation.review.rate;
-    // 추가 필드를 채워주세요 (예: imageUrl)
-    this.reviewDialog = true;
-  }
-  ,
-  deleteReview(reviewId) { // 매개변수 reviewId 추가
-    if (confirm('정말로 리뷰를 삭제하시겠습니까?')) {
-      axios.delete(`/reviews/${reviewId}`) // reviewId 사용
-          .then(() => {
-            alert('리뷰가 삭제되었습니다.');
-            this.fetchReservations();
-          })
-          .catch(error => {
-            console.error("리뷰 삭제 에러:", error);
-          });
-    }
-  }
-  ,
-
   // 프로필 수정 관련 스크립트
   openDialog() {
     this.editedUser = {
@@ -478,8 +404,7 @@ export default {
       console.error("S3 Upload Error:", error);
       throw error;
     }
-  }
-  ,
+  },
 
   //피드 제목들 불러오기
   async fetchMyFeeds() {
@@ -514,6 +439,7 @@ export default {
           // 실패시 오류 처리
         });
     this.showConfirmDialog = false; // 모달 닫기
+  },
   },
 }
 
