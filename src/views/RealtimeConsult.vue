@@ -26,6 +26,7 @@
 
 <script>
 import axios from "@/axios/axios-instance";
+import { mapState } from 'vuex'; // Vuex에서 사용자 정보를 가져오기 위해 필요
 
 export default {
   data() {
@@ -34,7 +35,15 @@ export default {
       rooms: []
     };
   },
+  computed: {
+    ...mapState(['id', 'username']) // Vuex store의 id와 username 상태를 가져옴
+  },
   created() {
+    if (!this.id || !this.username) {
+      this.$router.push('/');
+      alert("로그인이 필요합니다.")
+      return;
+    }
     this.fetchRooms();
   },
   methods: {
