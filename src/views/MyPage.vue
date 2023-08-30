@@ -57,6 +57,7 @@
             <!-- 나의 프로필-->
             <v-tab-item key="profile">
                 <v-list class="profile-section">
+
                     <!--프로필 수정 방식으로 만들어보기-->
 
                     <v-row class="justify-space-between">
@@ -66,7 +67,7 @@
                             </v-btn>
                         </v-col>
                         <v-col cols="auto">
-                            <v-btn class="delete-user">탈퇴하기</v-btn>
+                            <v-btn class="delete-user" @click="showConfirmDialog = true">탈퇴하기</v-btn>
                         </v-col>
                     </v-row>
                     <v-divider></v-divider>
@@ -78,12 +79,13 @@
                             <p>이메일: {{ user.email }}</p>
                             <p>내 소개: {{ user.introduction }}</p>
                         </div>
-
+                        <!--                        프로필 사진       -->
                         <div class="profile-image">
                             <v-img :src="user.imageUrl" alt="유저 이미지" height="200" width="300"></v-img>
                         </div>
                     </div>
 
+                    <!--내가 작성한 피드 리스트-->
                     <div class="feed-list">
                         <h2 class="feed-list-title">내가 작성한 피드</h2>
                         <ul class="feed-list-items">
@@ -142,7 +144,6 @@
             </v-card>
         </v-dialog>
 
-
         <!-- 피드 상세 정보 모달 -->
         <v-dialog v-model="feedDetailDialog" max-width="500px">
             <v-card>
@@ -152,6 +153,20 @@
 
                 <v-card-actions>
                     <v-btn color="primary" @click="feedDetailDialog = false">닫기</v-btn>
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
+
+        <!-- 회원 탈퇴 확인 모달창 -->
+        <v-dialog v-model="showConfirmDialog" max-width="500px">
+            <v-card>
+                <v-card-title>회원 탈퇴</v-card-title>
+                <v-card-text>
+                    정말로 회원 탈퇴하시겠습니까? 이 작업은 되돌릴 수 없습니다.
+                </v-card-text>
+                <v-card-actions>
+                    <v-btn text @click="showConfirmDialog = false">취소</v-btn>
+                    <v-btn color="red" text @click="performWithdrawal">탈퇴하기</v-btn>
                 </v-card-actions>
             </v-card>
         </v-dialog>
@@ -205,7 +220,9 @@ export default {
             myFeed: [], // 내가 작성한 글 목록
             selectedFeed: null, // 선택한 게시글
             feedDetailDialog: false,
-            feedDetail: {}
+            feedDetail: {},
+
+            showConfirmDialog: false, //회원탈퇴 확인 모달
         };
 
 
@@ -387,17 +404,14 @@ export default {
         async fetchMyFeeds() {
             try {
                 // 백엔드 API 호출하여 사용자가 작성한 글 목록 가져오기
-                const response = await axios.get('/feeds'); // API 엔드포인트에 맞게 수정
+                const response = await axios.get('/feeds/my-feeds'); // API 엔드포인트에 맞게 수정
                 this.myFeed = response.data; // 가져온 글 목록을 데이터에 저장
             } catch (error) {
                 console.error('Error fetching user posts:', error);
             }
         }
         ,
-        // 게시글 선택 시 호출되는 함수
-        selectFeed(feed) {
-            this.selectedFeed = feed;
-        },
+
         async showFeedDetail(id) {
             try {
                 const response = await axios.get(`/feeds/${id}`);
@@ -406,9 +420,23 @@ export default {
             } catch (error) {
                 console.error("Error fetching feed detail:", error);
             }
-        }
-    }
-    ,
+        },
+        performWithdrawal() {
+            // 회원 탈퇴 처리를 진행하는 메서드
+            const userId = this.$store.state.id; // 사용자 ID 가져오기
+            axios.delete(`/users/profile/${userId}`) // 백엔드 API 엔드포인트에 맞게 수정
+                .then(() => {
+                    this.$store.dispatch('logout');
+                })
+                .catch(error => {
+                    console.error('Error withdrawing user:', error);
+                    // 실패시 오류 처리
+                });
+            this.showConfirmDialog = false; // 모달 닫기
+        },
+
+    },
+
 
     mounted() {
         this.fetchReservations();
