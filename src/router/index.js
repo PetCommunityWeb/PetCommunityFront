@@ -2,8 +2,7 @@ import Vue from 'vue';
 import Vuex from 'vuex'
 import Router from 'vue-router';
 import axios from "@/axios/axios-instance";
-import store from '@/store';  // 스토어 임포트
-
+import store from '@/store'; // 스토어 임포트
 import FindHospital from '@/views/FindHospital.vue';
 import RealtimeConsult from '@/views/RealtimeConsult.vue';
 import ChatRoom from "@/views/ChatRoom";
@@ -71,9 +70,9 @@ const routes = [
         component: MyPage
     },
     {
-      path: '/management',
-      name: 'Management',
-      component: HospitalManagement
+        path: '/management',
+        name: 'Management',
+        component: HospitalManagement
     },
     {
         path: '/hospital/:id',
@@ -83,8 +82,9 @@ const routes = [
     {
         path: '*',  // 기본 경로 설정
         redirect: '/find-hospital'
-    }
+    },
 ];
+
 
 const router = new Router({
     mode: 'history',
