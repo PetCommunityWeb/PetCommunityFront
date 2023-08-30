@@ -30,6 +30,7 @@
 
 <script>
 import axios from "@/axios/axios-instance";
+import Cookies from 'js-cookie';
 
 export default {
   name: "LoginView",
@@ -46,24 +47,18 @@ export default {
         password: this.password,
       };
       try {
-        await axios.post("/users/login", data)
-            .then(response => {
-                  console.log(response.headers)
-                  const accessToken = response.headers.get("authorization")
-                  window.localStorage.setItem('accessToken', accessToken)
-
-                  // const refreshToken = response.headers.get("RefreshToken");
-                  // if (accessToken !== undefined && refreshToken !== undefined) {
-                  //   window.localStorage.setItem('accessToken', accessToken)
-                  //   Cookies.set("refreshToken", refreshToken)
-                  //   window.location.href = '/home'
-                  // }
-                  this.$router.push("/");
-                }
-            )
+        const response = await axios.post("/users/login", data);
+        const accessToken = response.headers['authorization'];
+        const refreshToken = response.headers.get('refreshToken')
+        if (accessToken && refreshToken) {
+          window.localStorage.setItem('accessToken', accessToken);
+          Cookies.set("refreshToken", refreshToken);
+          this.$router.push("/");
+        }
       } catch (error) {
-        alert(error.response.data)
+        alert(error.response.data);
         console.log(error.response.data);
+        console.log(error.response); // 추가적인 디버깅 정보
       }
     },
     goToSignUp() {
