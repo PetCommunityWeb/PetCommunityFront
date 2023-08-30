@@ -51,17 +51,6 @@ export default {
         const response = await axios.post("/users/login", data);
         const accessToken = response.headers['authorization'];
         const refreshToken = response.headers.get('refreshToken')
-        axios.get('/users/my-profile')
-            .then(response => {
-              const user = response.data;
-              console.log(user)
-              store.commit('setId', user.id)
-              store.commit('setUsername', user.username)
-              store.commit('setUserRole', user.role);
-              store.commit('setNickname', user.nickname);
-              store.commit('setImageUrl', user.imageUrl);
-              store.commit('setEmail', user.email);
-            })
         if (accessToken && refreshToken) {
           window.localStorage.setItem('accessToken', accessToken);
           Cookies.set("refreshToken", refreshToken);

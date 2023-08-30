@@ -37,20 +37,20 @@
             <!-- Appointment Slots Card -->
             <v-col cols="6">
               <v-card class="flex-container">
-                <div class="flex-child slot-list-container">
-                  <v-list>
-                    <v-list-item-group v-if="availableSlots.length">
-                      <v-list-item v-for="slot in availableSlots" :key="slot.slotId">
-                        <v-list-item-content>
-                          <v-list-item-title>{{ slot.startTime }}</v-list-item-title>
-                          <v-list-item-subtitle v-if="slot.reserved">이미 예약됨</v-list-item-subtitle>
-                        </v-list-item-content>
-                        <v-list-item-action v-if="!isOwner && !slot.reserved">
-                          <v-btn @click="reservate(slot)">예약하기</v-btn>
-                        </v-list-item-action>
-                      </v-list-item>
-                    </v-list-item-group>
-                  </v-list>
+                  <div class="flex-child slot-list-container">
+                    <v-list>
+                      <v-list-item-group v-if="availableSlots.length">
+                        <v-list-item v-for="slot in availableSlots" :key="slot.slotId">
+                          <v-list-item-content>
+                            <v-list-item-title>{{ slot.startTime }}</v-list-item-title>
+                            <v-list-item-subtitle v-if="slot.reserved">이미 예약됨</v-list-item-subtitle>
+                          </v-list-item-content>
+                          <v-list-item-action v-if="!isOwner && !slot.reserved">
+                            <v-btn @click="reservate(slot)">예약하기</v-btn>
+                          </v-list-item-action>
+                        </v-list-item>
+                      </v-list-item-group>
+                    </v-list>
                   <v-row class="mt-4" v-if="isOwner">
                     <v-col>
                       <v-select v-model="selectedHour" :items="hours" label="시간 선택"></v-select>
@@ -212,13 +212,12 @@ export default {
         startTime: slot.startTime
       };
       console.log(requestData)
+      slot.reserved = true;
       try {
         await axios.post('/reservations', requestData)
       } catch (error) {
-        console.error('API 요청 중 오류 발생:', error);
-        alert('예약 중 오류 발생');
+        alert('예약 중 오류 발생:' + error.response.data.msg);
       }
-      await this.created();
     },
     async fetchAvailableTimes() {
       try {
