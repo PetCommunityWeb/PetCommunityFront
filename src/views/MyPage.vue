@@ -56,27 +56,33 @@
 
             <!-- 나의 프로필-->
             <v-tab-item key="profile">
-                <v-list>
+                <v-list class="profile-section">
                     <!--프로필 수정 방식으로 만들어보기-->
-                    <div id=profile>
-                        <h1>내 정보
-                            <v-btn @click="openDialog">내 정보 수정하기</v-btn>
-                        </h1>
-                        <!--                        <p>로그인 ID: {{ user.username }}</p>-->
-                        <p>이름: {{ user.nickname }}</p>
-                        <p>이메일: {{ user.email }}</p>
-                        <p>내 소개: {{ user.introduction }}</p>
-                        <p>내 사진(200px * 300px 권장)</p>
-                        <!-- 이미지 표시 -->
-                        <v-img :src="user.imageUrl" alt="유저 이미지" height="200" width="300"></v-img>
+                    <!-- 프로필 수정 버튼 -->
+                    <v-btn class="edit-profile-button" @click="openDialog">
+                        내 정보 수정하기
+                    </v-btn>
 
+                    <v-divider></v-divider>
+
+                    <!-- 프로필 정보 -->
+                    <div class="profile-details">
+                        <div class="profile-info">
+                            <p>이름: {{ user.nickname }}</p>
+                            <p>이메일: {{ user.email }}</p>
+                            <p>내 소개: {{ user.introduction }}</p>
+                        </div>
+
+                        <div class="profile-image">
+                            <v-img :src="user.imageUrl" alt="유저 이미지" height="200" width="300"></v-img>
+                        </div>
                     </div>
 
-                    <div id=document>
-                        <h2>내가 작성한 피드</h2>
-                        <ul>
+                    <div class="feed-list">
+                        <h2 class="feed-list-title">내가 작성한 피드</h2>
+                        <ul class="feed-list-items">
                             <li v-for="feed in myFeed" :key="feed.id">
-                                <button @click="showFeedDetail(feed.id)">{{ feed.title }}</button>
+                                <button @click="showFeedDetail(feed.id)" class="feed-item">{{ feed.title }}</button>
                             </li>
                         </ul>
                     </div>
@@ -130,10 +136,9 @@
             </v-card>
         </v-dialog>
 
-        <!-- 게시글 상세 페이지 컴포넌트 -->
-        <FeedDetail v-if="selectedFeed" :feed="selectedFeed"/>
+
         <!-- 피드 상세 정보 모달 -->
-        <v-dialog v-model="feedDetailDialog">
+        <v-dialog v-model="feedDetailDialog" max-width="500px">
             <v-card>
                 <v-card-title>{{ feedDetail.title }}</v-card-title>
                 <v-card-text>{{ feedDetail.content }}</v-card-text>
@@ -153,13 +158,11 @@
 import axios from '@/axios/axios-instance'; // 필요하다면 경로를 수정하세요
 import {mapState} from 'vuex';
 import AWS from "aws-sdk";
-import FeedDetail from "@/components/FeedDetail.vue";
+
 
 export default {
 
-    components: {
-        FeedDetail
-    },
+
     name: "MyPage",
     data() {
         return {
@@ -424,12 +427,54 @@ export default {
 </script>
 
 <style scoped>
-#profile {
-    border: 2px solid blue;
+
+.profile-section {
+    padding: 20px;
 }
 
-#document {
-    border: 1px solid red;
+.edit-profile-button {
+    margin-bottom: 10px;
+
+}
+
+.profile-details {
+    display: flex;
+    align-items: center;
+}
+
+.profile-info {
+    flex: 1;
+    margin-right: 20px;
+}
+
+.profile-image {
+    flex: 1;
+    text-align: center;
+    border: 1px solid black;
+}
+
+.feed-list {
+    margin-top: 20px;
+}
+
+.feed-list-title {
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+}
+
+.feed-list-items {
+    list-style: none;
+    padding: 0;
+}
+
+.feed-item {
+    background-color: #f0f0f0;
+    border: 1px solid #ddd;
+    padding: 10px;
+    margin: 5px 0;
+    cursor: pointer;
+    width: 100%;
+    text-align: left;
 }
 
 </style>
