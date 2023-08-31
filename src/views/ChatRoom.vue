@@ -65,7 +65,7 @@ export default {
       });
     },
     connectWebSocket() {
-      this.webSocket = new WebSocket(`ws://ec2-3-38-83-147.ap-northeast-2.compute.amazonaws.com:8080/ws/chat?uuid=${this.$route.params.uuid}`);
+      this.webSocket = new WebSocket(`ws://pet-community-api.net/ws/chat?uuid=${this.$route.params.uuid}`);
 
       this.webSocket.onopen = () => {
         console.log("WebSocket connection opened");
