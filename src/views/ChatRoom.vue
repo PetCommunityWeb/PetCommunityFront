@@ -65,7 +65,7 @@ export default {
       });
     },
     connectWebSocket() {
-      this.webSocket = new WebSocket(`ws://pet-community-api.net/ws/chat:443?uuid=${this.$route.params.uuid}`);
+      this.webSocket = new WebSocket(`ws://pet-community-api.net:443/ws/chat?uuid=${this.$route.params.uuid}`);
 
       this.webSocket.onopen = () => {
         console.log("WebSocket connection opened");
