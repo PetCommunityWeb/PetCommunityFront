@@ -22,7 +22,13 @@ jobs:
             
       - name: Install Dependencies
         run: npm install
-        
+      - name: Setup Environment Variables
+        run: |
+          echo "VUE_APP_SERVER_URL=http://ec2-3-38-83-147.ap-northeast-2.compute.amazonaws.com:8080" >> .env
+          echo "VUE_APP_AWS_ACCESS_KEY=${{ secrets.AWS_ACCESS_KEY }}" >> .env
+          echo "VUE_APP_AWS_SECRET_KEY=${{ secrets.AWS_SECRET_KEY }}" >> .env
+          echo "VUE_APP_AWS_REGION=ap-northeast-2" >> .env
+          echo "VUE_APP_AWS_BUCKET=hjbucket123" >> .env
       - name: Build
         run: npm run build
 
