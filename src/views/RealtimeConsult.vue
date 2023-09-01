@@ -63,6 +63,7 @@ export default {
           this.rooms.push(response.data.room);
         } else if (response.data) { // 서버에서 방 정보를 직접 반환할 경우
           this.rooms.push(response.data);
+          await this.fetchRooms();
         }
 
         this.roomName = '';
