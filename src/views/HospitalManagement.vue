@@ -1,31 +1,29 @@
 <template>
   <v-container class="hospital-management-container">
-    <h1>병원 관리</h1>
     <!-- 소유하고 있는 병원 목록 -->
+    <h1>병원 관리</h1>
     <div class="my-hospitals-list">
-      <v-row>
-        <v-col cols="12" sm="6" md="4" v-for="hospital in myHospitals" :key="hospital.id">
-          <router-link :to="`/hospital/${hospital.id}`">
-            <v-card class="fixed-size-card">
-              <v-img :src="hospital.imageUrl" alt="Hospital Image" height="200px"></v-img>
-              <v-card-title>{{ hospital.name }}</v-card-title>
-              <v-card-subtitle>{{ hospital.address }}</v-card-subtitle>
-              <v-card-text>
-                <p>{{ hospital.introduction }}</p>
-                <p><strong>전화번호:</strong> {{ hospital.phoneNumber }}</p>
-              </v-card-text>
-              <v-card-actions>
-                <v-chip v-for="species in hospital.speciesEnums" :key="species" small>{{ species }}</v-chip>
-                <v-chip v-for="subject in hospital.subjectEnums" :key="subject" small outlined>{{ subject }}</v-chip>
-              </v-card-actions>
-            </v-card>
-          </router-link>
+      <v-row class="fill-height">
+        <v-col cols="12" md="4" v-for="hospital in myHospitals" :key="hospital.id">
+            <router-link :to="`/hospital/${hospital.id}`">
+              <v-card>
+                <v-img :src="hospital.imageUrl" alt="Hospital Image" height="200px"></v-img>
+                <v-card-title>{{ hospital.name }}</v-card-title>
+                <v-card-subtitle>{{ hospital.address }}</v-card-subtitle>
+                <v-card-text>
+                  <p>{{ hospital.introduction }}</p>
+                  <p><strong>전화번호:</strong> {{ hospital.phoneNumber }}</p>
+                </v-card-text>
+                <v-card-actions>
+                  <v-chip v-for="species in hospital.speciesEnums" :key="species" small>{{ species }}</v-chip>
+                  <v-chip v-for="subject in hospital.subjectEnums" :key="subject" small outlined>{{ subject }}</v-chip>
+                </v-card-actions>
+              </v-card>
+            </router-link>
         </v-col>
       </v-row>
     </div>
-
-
-    <v-btn @click="dialog = true">병원 등록하기</v-btn>
+    <v-btn @click="dialog = true" style="margin-top: 50px">병원 등록하기</v-btn>
     <v-dialog v-model="dialog" max-width="500px">
       <v-card>
         <v-card-title>
@@ -79,11 +77,12 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
-  </v-container>
+    </v-container>
 </template>
 
 <script>
 import hospitalMixin from "@/mixins/hospitalMixin";
+
 export default {
   name: "HospitalManagement",
   mixins: [hospitalMixin],
@@ -119,26 +118,24 @@ export default {
 }
 </script>
 
-<style scoped>
+<style>
 .hospital-management-container {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   height: 100vh;
+  width: 100%;
 }
 
 .my-hospitals-list {
-  margin-bottom: 20px;
+  width: 100%;
+  max-width: 1200px;  /* 원하는 최대 폭으로 조정하실 수 있습니다. */
+  margin: 0 auto;     /* 중앙 정렬 */
 }
 
 .my-hospitals-list ul {
   list-style-type: none;
   padding-left: 0;
-}
-
-.fixed-size-card {
-  width: 300px;
-  height: 450px;
 }
 </style>
