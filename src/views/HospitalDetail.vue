@@ -244,9 +244,15 @@ export default {
         }
       }
       try {
-        await axios.put(`/hospitals/${this.hospital.id}`, this.editHospitalData);
-        this.hospital = {...this.editHospitalData};
-        this.editHospitalDialog = false;
+        const response = await axios.put(`/hospitals/${this.hospital.id}`, this.editHospitalData);
+        if (response.data.statusCode === 400) {
+          alert(response.data.msg);
+          this.editHospitalDialog = false;
+        }
+        else {
+          this.hospital = {...this.editHospitalData};
+          this.editHospitalDialog = false;
+        }
         // 성공 알림 또는 리프레시 로직 추가
       } catch (error) {
         console.error("Failed to update hospital:", error);
