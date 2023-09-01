@@ -254,7 +254,10 @@ export default {
     },
     async deleteHospital() {
       try {
-        await axios.delete(`/hospitals/${this.hospital.id}`);
+        const response = await axios.delete(`/hospitals/${this.hospital.id}`);
+        if (response.data.statusCode === 400) {
+          alert(response.data.msg);
+        }
         // 성공 후 리디렉션 또는 알림 표시
         await this.$router.push("/")
       } catch (error) {
