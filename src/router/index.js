@@ -95,7 +95,7 @@ router.beforeEach((to, from, next) => {
     axios.get('/users/my-profile')
         .then(response => {
             const user = response.data;
-            console.log(user);
+            // console.log(user);
             store.commit('setId', user.id);
             store.commit('setUsername', user.username);
             store.commit('setUserRole', user.role);
