@@ -92,23 +92,27 @@ const router = new Router({
 
 router.beforeEach((to, from, next) => {
     // Call your axios function here
-    axios.get('/users/my-profile')
-        .then(response => {
-            const user = response.data;
-            // console.log(user);
-            store.commit('setId', user.id);
-            store.commit('setUsername', user.username);
-            store.commit('setUserRole', user.role);
-            store.commit('setNickname', user.nickname);
-            store.commit('setImageUrl', user.imageUrl);
-            store.commit('setEmail', user.email);
-        })
-        .catch(() => {
-            console.log("로그인한 회원이 아닙니다.");
-        })
-        .finally(() => {
-            next();  // This ensures the navigation continues after you're done fetching the data
-        });
-
+    const accessToken = localStorage.getItem('accessToken');
+    if (accessToken) {
+        axios.get('/users/my-profile')
+            .then(response => {
+                const user = response.data;
+                // console.log(user);
+                store.commit('setId', user.id);
+                store.commit('setUsername', user.username);
+                store.commit('setUserRole', user.role);
+                store.commit('setNickname', user.nickname);
+                store.commit('setImageUrl', user.imageUrl);
+                store.commit('setEmail', user.email);
+            })
+            .catch(() => {
+                console.log("로그인한 회원이 아닙니다.");
+            })
+            .finally(() => {
+                next();  // This ensures the navigation continues after you're done fetching the data
+            });
+    } else {
+        next();
+    }
 });
 export default router;
