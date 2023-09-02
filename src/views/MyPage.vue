@@ -2,7 +2,6 @@
   <div>
     <v-tabs v-model="selectedTab" grow class="my-4" style="width: 50%; margin: 0 auto;">
       <v-tab key="reservations" class="py-1 px-2">예약 내역</v-tab>
-      <v-tab key="notifications" class="py-1 px-2">알림</v-tab>
       <v-tab key="profile" class="py-1 px-2">내 정보</v-tab>
 
       <v-tab-item key="reservations">
@@ -26,28 +25,15 @@
                 <v-btn v-if="reservation.review" small color="green" @click="updateReview(reservation)">
                   리뷰수정
                 </v-btn>
-                <v-btn v-if="reservation.review" small color="red"
-                       @click="deleteReview(reservation.review.id)">리뷰삭제
-                </v-btn>
               </v-list-item-action>
-
+              <v-btn v-if="reservation.review" small color="red"
+                     @click="deleteReview(reservation.review.id)">리뷰삭제
+              </v-btn>
               <v-list-item-action
                   v-if="isBeforeTomorrow(reservation.date) && reservation.status !== '예약취소'">
                 <v-btn small color="red" @click="cancelReservation(reservation.reservationNum)">예약 취소
                 </v-btn>
               </v-list-item-action>
-            </v-list-item>
-            <v-divider></v-divider>
-          </v-list-item-group>
-        </v-list>
-      </v-tab-item>
-      <v-tab-item key="notifications">
-        <v-list>
-          <v-list-item-group v-for="notification in notifications" :key="notification.id">
-            <v-list-item>
-              <v-list-item-content>
-                <v-list-item-title class="mb-1">{{ notification.content }}</v-list-item-title>
-              </v-list-item-content>
             </v-list-item>
             <v-divider></v-divider>
           </v-list-item-group>
@@ -189,10 +175,6 @@ export default {
     return {
       selectedTab: 'reservations',
       reservations: [],
-      notifications: [
-        {id: 1, content: "새로운 메시지가 도착했습니다."},
-        {id: 2, content: "예약이 변경되었습니다."}
-      ],
       reviewDialog: false,
       reviewData: {
         title: '',
@@ -262,7 +244,7 @@ export default {
       const today = new Date().toISOString().slice(0, 10);
       const tomorrow = new Date(today);
       tomorrow.setDate(tomorrow.getDate() + 1);
-      return reservationDate >= tomorrow.toISOString().slice(0, 10);
+      return reservationDate > tomorrow.toISOString().slice(0, 10);
     }
     ,
     cancelReservation(reservationNum) {

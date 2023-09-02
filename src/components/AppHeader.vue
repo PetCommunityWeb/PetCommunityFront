@@ -5,6 +5,7 @@
         Pet병
       </router-link>
     </v-toolbar-title>
+    <NotificationIcon v-if="isLoggedIn"></NotificationIcon>
 
     <v-spacer></v-spacer>
 
@@ -22,8 +23,12 @@
 
 <script>
 import { mapState, mapActions } from 'vuex';
+import NotificationIcon from '@/components/NotificationIcon.vue'; // 경로에 따라 경로를 조정해야 합니다.
 
 export default {
+  components: {
+    NotificationIcon
+  },
   computed: {
     ...mapState({
       isLoggedIn: state => !!state.role,
