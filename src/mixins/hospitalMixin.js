@@ -61,6 +61,7 @@ export default {
                 console.log(error)
             }
             this.dialog = false;
+            await this.fetchMyHospitals();
         },
         async convertAddressToCoordinates() {
             try {
