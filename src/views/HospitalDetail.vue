@@ -172,13 +172,14 @@ export default {
     this.created()
   },
   computed: {
-    ...mapState(["email"])
+    ...mapState(["email", "role"])
   },
   watch: {
     hospital(newVal) {
       console.log(newVal.ownerEmail)
       console.log(this.email)
-      if (newVal.ownerEmail && newVal.ownerEmail === this.email) {
+
+      if (this.role === "OWNER" && newVal.ownerEmail && newVal.ownerEmail === this.email) {
         this.isOwner = true;
       }
       this.editHospitalData = {...newVal};
