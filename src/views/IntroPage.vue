@@ -11,6 +11,11 @@
             <router-link to="/community" class="btn btn-primary">커뮤니티</router-link>
         </div>
 
+        <div class="image-slider-container">
+            <image-slider class="image-slider"></image-slider>
+        </div>
+
+
         <!-- 페이지 정보 영역 (footer) -->
         <footer>
             <div class="footer-content">
@@ -28,19 +33,13 @@
 
 <script>
 
-
+import ImageSlider from "@/components/ImageSlider"; // 이미지 슬라이더 컴포넌트 임포트
 
 export default {
     name: 'HomePage',
-
-    mounted() {
-        // HTML 문서가 로드될 때 실행
-        // 이미지 컨테이너 엘리먼트 가져오기
-        const container = document.querySelector('.animal-images-container');
-
-        // 애니메이션 시작
-        container.style.animationPlayState = 'running';
-    }
+    components: {
+        ImageSlider, // 이미지 슬라이더 컴포넌트 등록
+    },
 }
 
 </script>
@@ -99,14 +98,6 @@ footer {
     background-color: #0056b3; /* 마우스 호버 시 배경색 변경 */
 }
 
-.animal-images-container {
-    position: absolute;
-    bottom: -100px; /* 초기 위치를 버튼 아래로 설정 */
-    width: 100%;
-    text-align: center;
-    animation: moveImages 10s linear infinite; /* 애니메이션 적용 */
-}
-
 @keyframes moveImages {
     0% {
         transform: translateY(0); /* 초기 위치 */
@@ -116,10 +107,17 @@ footer {
     }
 }
 
-.animal-images-container img {
-    width: 100px; /* 이미지 너비 조절 */
-    height: auto;
-    margin: 0 10px; /* 이미지 사이 여백 조절 */
+.image-slider-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 400px; /* 슬라이더의 높이에 맞게 조절하세요 */
+}
+
+/* 이미지 슬라이더 스타일 */
+.image-slider {
+    width: 100%; /* 슬라이더의 너비를 조절하세요 */
+    max-width: 800px; /* 슬라이더의 최대 너비를 설정하세요 */
 }
 
 </style>
