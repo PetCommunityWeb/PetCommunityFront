@@ -189,16 +189,16 @@ window.routeToHospitalDetail = function (event) {
 
 .hospital-list {
     width: 300px; /* 원하는 너비로 조정하세요. */
-    height: 1000px;
+    height: 600px;
     overflow-y: auto;
-    border-left: 1px solid #ccc;
-    padding-left: 20px;
+    /*border-left: 1px solid #ccc;*/
+    padding: 20px;
 }
 
 .hospital-image {
     width: 100%;
     height: auto;
-    max-height: 150px; /* 원하는 높이로 설정할 수 있습니다. */
+    max-height: 100px; /* 원하는 높이로 설정할 수 있습니다. */
     object-fit: cover; /* 이미지가 카드 크기에 맞게 조절됩니다. */
 }
 </style>

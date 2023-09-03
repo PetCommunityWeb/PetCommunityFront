@@ -15,10 +15,16 @@ import MyPage from '@/views/MyPage.vue';
 import SignUp from "@/views/SignUp";
 import HospitalManagement from "@/views/HospitalManagement";
 import HospitalDetail from "@/views/HospitalDetail";
+import IntroPage from "@/views/IntroPage.vue";
 
 Vue.use(Router);
 Vue.use(Vuex)
 const routes = [
+    {
+        path: '/',
+        name: 'Home',
+        component: IntroPage // 홈페이지 컴포넌트를 연결
+    },
     {
         path: '/find-hospital',
         name: 'FindHospital',
