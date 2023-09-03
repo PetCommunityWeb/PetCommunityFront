@@ -1,14 +1,21 @@
 <template>
 
-    <div class="intro" style="background-color: #dddddd">
+    <div class="intro">
         <!-- IntroPage 내용 -->
-        <div class="intro-content" style="background-color: white">
+        <div class="intro-content">
             <h1 class='text-center'>나의 반려동물을 위한 Pet 병 </h1>
-            <p class='text-center'>동물 병원 예약, 반려동물 관련 팁, 내 반려동물 자랑 등 다양한 활동을 해보세요!</p>
+            <p></p>
+            <p class='text-center' style="font">동물 병원 예약, 반려동물 관련 팁, 내 반려동물 자랑 등 다양한 활동을 해보세요!</p>
         </div>
         <div class="text-center">
-            <router-link to="/hospitals" class="btn btn-primary">병원 찾기</router-link>
-            <router-link to="/community" class="btn btn-primary">커뮤니티</router-link>
+            <router-link to="/hospitals" class="btn btn-primary">
+                <v-icon left>mdi-map-search</v-icon>
+                병원 찾기
+            </router-link>
+            <router-link to="/community" class="btn btn-primary">
+                <v-icon left>mdi-forum</v-icon>
+                커뮤니티
+            </router-link>
         </div>
 
         <div class="image-slider-container">
@@ -54,11 +61,17 @@ export default {
     justify-content: center; /* 요소들을 수평 가운데 정렬 */
 }
 
+.intro-content {
+    height: 130px;
+    padding: 10px;
+}
+
 h1 {
     font-size: 2em;
 }
 
 footer {
+    height: 110px;
     background-color: beige;
     color: black;
     text-align: center;
@@ -84,18 +97,18 @@ footer {
 
 .btn {
     padding: 10px 20px; /* 버튼의 패딩 조절 */
-    background-color: #007bff; /* 버튼의 배경색 조절 */
-    color: #fff; /* 버튼의 글자색 조절 */
+    background-color: #F8F8F8FF; /* 버튼의 배경색 조절 */
+    color: black; /* 버튼의 글자색 조절 */
     text-decoration: none; /* 밑줄 제거 */
     border: none; /* 테두리 제거 */
     cursor: pointer; /* 커서를 포인터로 변경하여 버튼임을 나타냄 */
     font-size: 16px; /* 버튼의 글자 크기 조절 */
-    margin: 30px 10px; /* 버튼 간격 조절 */
+    margin: 10px; /* 버튼 간격 조절 */
     border-radius: 5px; /* 버튼의 모서리를 둥글게 만듦 */
 }
 
 .btn:hover {
-    background-color: #0056b3; /* 마우스 호버 시 배경색 변경 */
+    background-color: #D0D0D0FF; /* 마우스 호버 시 배경색 변경 */
 }
 
 @keyframes moveImages {

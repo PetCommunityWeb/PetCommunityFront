@@ -1,14 +1,16 @@
 <template>
     <div class="image-slider">
         <div v-if="images.length > 0">
-            <img :src="currentImage" :alt="currentImageAlt" />
+            <transition name="fade" mode="out-in">
+                <img :key="currentImageIndex" :src="currentImage" :alt="currentImageAlt" />
+            </transition>
         </div>
         <div v-else>
             <p>No images to display.</p>
         </div>
         <div class="controls">
-            <button @click="prevImage">Previous</button>
-            <button @click="nextImage">Next</button>
+<!--            <button @click="prevImage">Previous</button>-->
+<!--            <button @click="nextImage">Next</button>-->
         </div>
     </div>
 </template>
@@ -21,7 +23,6 @@ export default {
                 require("@/assets/baby/11.jpg"),
                 require("@/assets/baby/12.jpg"),
                 require("@/assets/baby/14.jpg"),
-
                 // 여기에 다른 이미지 경로 추가
             ],
             currentImageIndex: 0,
@@ -75,5 +76,13 @@ img {
 
 .controls {
     margin-top: 10px;
+}
+
+/* 이미지 전환을 위한 CSS 트랜지션 정의 */
+.fade-enter-active, .fade-leave-active {
+    transition: opacity 1s;
+}
+.fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+    opacity: 0;
 }
 </style>
