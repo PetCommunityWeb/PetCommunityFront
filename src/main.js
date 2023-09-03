@@ -10,4 +10,8 @@ new Vue({
   router,
   vuetify, // Vuetify 인스턴스를 Vue 인스턴스에 추가합니다.
   store,
-});
+})
+
+export const eventBus = new Vue;
+
+

@@ -1,16 +1,74 @@
 <template>
-  <div>
-    <h2>Tip 게시판</h2>
-    <!-- 게시글 목록과 기타 UI 요소를 여기에 추가 -->
-  </div>
+  <v-container>
+    <v-data-table
+        :key="tips"
+        :headers="headers"
+        :items="tips"
+        :items-per-page="10"
+        class="elevation-1"
+        @click:row="rowClick"
+    >
+      <template v-slot:tip="{ tip }">
+        {{ tip.user ? tip.user.username : 'Unknown' }}
+      </template>
+    </v-data-table>
+    <v-row>
+      <v-btn outlined color="blue" @click="writeClick" > 글쓰기 </v-btn>
+    </v-row>
+  </v-container>
+
 </template>
 
 <script>
-export default {
-  name: "TipBoard"
-}
-</script>
+import axios from "@/axios/axios-instance";
+import AWS from 'aws-sdk';
+import {mapState} from "vuex";
 
-<style scoped>
-/* 필요한 스타일을 여기에 추가 */
-</style>
+export default {
+  name:'TipBoard',
+  created() {
+    this.fetchTips();
+  },
+  computed: {
+    ...mapState('user', ['username']), // 사용자 이름 가져오기
+  },
+  methods: {
+    async fetchTips() {
+      try {
+        this.requestBody = {
+          title: this.title,
+          username: this.username,
+          page: this.page
+        };
+
+        const response = await axios.get("/tips", {
+          params: this.requestBody
+        });
+
+        // this.tips = response.data;
+        this.tips = response.data.map(item => ({ ...item, username: item.username }));
+      } catch (error) {
+        console.error("Error fetching tips:", error);
+      }
+    },
+    writeClick() {
+      this.$router.push('/community/tip/create');
+    },
+    rowClick(tip) {
+      this.$router.push('/community/tip/' + tip.id);
+    }
+  },
+  data() {
+    return {
+      requestBody: {},
+      headers: [
+        { text: 'Title', value: 'title' },
+        { text: 'Username', value: 'username' },
+        { text: 'Like', value: 'tipLike'}
+        // { text: 'Reg Date', value: 'regDt' }
+      ],
+      tips: [],
+    };
+  }
+};
+</script>
