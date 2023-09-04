@@ -175,6 +175,7 @@ window.routeToHospitalDetail = function (event) {
     flex-direction: column;
     align-items: center;
     height: 100vh;
+    padding: 12px;
 }
 
 .content-wrapper {

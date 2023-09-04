@@ -20,7 +20,7 @@
                 <v-icon left>mdi-forum</v-icon> 커뮤니티
             </v-btn>
             <v-btn text to="/pet-service" class="custom-button">
-                <v-icon left>mdi-dog</v-icon> 애견 서비스
+                <v-icon left>mdi-dog</v-icon> 반려동물 서비스
             </v-btn>
             <v-btn text v-if="isLoggedIn && role === 'OWNER'" to="/management" class="custom-button">
                 <v-icon left>mdi-hospital-building</v-icon> 병원 관리
@@ -29,7 +29,7 @@
                 <v-icon left>mdi-login</v-icon> 로그인
             </v-btn>
             <v-btn text v-if="isLoggedIn" to="/mypage" class="custom-button">
-                <v-icon left>mdi-account-circle</v-icon> 마이페이지
+                <v-icon left>mdi-account-circle</v-icon> 마이 페이지
             </v-btn>
             <v-btn text v-if="isLoggedIn" @click="logout" class="custom-button">
                 <v-icon left>mdi-logout</v-icon> 로그아웃
