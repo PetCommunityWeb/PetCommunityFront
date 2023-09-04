@@ -14,6 +14,9 @@
             <v-icon color="yellow" v-for="n in parseInt(averageRating(hospital))" :key="`full-${hospital.id}-${n}`">mdi-star</v-icon>
             <v-icon color="yellow" v-if="averageRating(hospital) % 1 >= 0.5" :key="`half-${hospital.id}`">mdi-star-half</v-icon>
           </div>
+          <v-chip-group column>
+            <v-chip v-for="day in getKoreanDays(hospital.operatingDays)" :key="day" small>{{ day }}</v-chip>
+          </v-chip-group>
           <v-card-actions>
             <v-chip v-for="species in hospital.speciesEnums" :key="species" small>{{ species }}</v-chip>
             <v-chip v-for="subject in hospital.subjectEnums" :key="subject" small outlined>{{ subject }}</v-chip>
@@ -130,7 +133,13 @@
               label="전문 분야"
               multiple
           ></v-select>
-          <!-- 추가적인 필드를 이곳에 추가하실 수 있습니다. -->
+          <v-col cols="12">
+            <v-row>
+              <v-col v-for="day in days" :key="day.value" cols="12" sm="4">
+                <v-checkbox v-model="editHospitalData.operatingDays" :label="day.text" :value="day.value"></v-checkbox>
+              </v-col>
+            </v-row>
+          </v-col>
         </v-card-text>
         <v-card-actions>
           <v-btn @click="updateHospital">저장</v-btn>
@@ -151,6 +160,15 @@ export default {
   mixins: [hospitalMixin],
   data() {
     return {
+      days: [  // 요일 정보
+        { text: '월요일', value: 'MONDAY' },
+        { text: '화요일', value: 'TUESDAY' },
+        { text: '수요일', value: 'WEDNESDAY' },
+        { text: '목요일', value: 'THURSDAY' },
+        { text: '금요일', value: 'FRIDAY' },
+        { text: '토요일', value: 'SATURDAY' },
+        { text: '일요일', value: 'SUNDAY' },
+      ],
       hospital: {},
       editHospitalData: {},
       isOwner: false,
@@ -159,7 +177,7 @@ export default {
       selectedHour: null,       // 선택된 시간을 저장
       selectedMinute: null,
       isTimePickerOpen: false,
-      selectedDate: new Date().toISOString().substr(0, 10),
+      selectedDate: null,
       isBookingManagerOpen: false, // 예약관리 UI를 토글하기 위한 변수
       availableSlots: [], // 해당 날짜에 대한 사용 가능한 예약 시간을 저장하기 위한 배열
       hours: Array.from({length: 24}, (_, i) => i.toString()),
@@ -186,6 +204,12 @@ export default {
     }
   },
   methods: {
+    getKoreanDays(englishDays) {
+      return englishDays.map(englishDay => {
+        const matchingDay = this.days.find(day => day.value === englishDay);
+        return matchingDay ? matchingDay.text : englishDay;
+      });
+    },
     averageRating(hospital) {
       if (hospital.reviews && hospital.reviews.length > 0) {
         const totalRating = hospital.reviews.reduce((sum, review) => sum + review.rate, 0);
