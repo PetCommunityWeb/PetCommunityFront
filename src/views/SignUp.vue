@@ -68,13 +68,11 @@ export default {
       }
       axios.post("/users/signup", userInfo)
           .then(response => {
-            console.log(response);
             alert('회원가입 성공')
             this.$router.push('/login')
           })
           .catch(error => {
-            console.log(error);
-            alert(error.response.data)
+            console.log(error.response.msg);
           })
       // TODO: 회원가입 로직 구현
       console.log("Form Submitted:", {
