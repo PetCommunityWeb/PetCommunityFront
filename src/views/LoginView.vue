@@ -54,7 +54,7 @@ export default {
         if (accessToken && refreshToken) {
           console.log("성공")
           window.localStorage.setItem('accessToken', accessToken);
-          Cookies.set("refreshToken", refreshToken);
+          Cookies.set("refreshToken", refreshToken, { expires: 7 }); // expires: 유지 시간 (일 단위)
           await this.$router.push("/");
         }
       } catch (error) {

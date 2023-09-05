@@ -29,10 +29,6 @@ instance.interceptors.request.use(
 
 instance.interceptors.response.use(
     (response) => {
-        if (response.data.msg === "refreshToken이 만료되었습니다.") {
-            // alert(response.data.msg); 사용자가 refresh Token 관련 msg를 알 필요가 없다
-            store.dispatch('logout'); // 로그아웃 액션 호출
-        }
         const newAccessToken = response.headers['authorization'];
         if (newAccessToken) {
             window.localStorage.setItem('accessToken', newAccessToken);
@@ -40,6 +36,10 @@ instance.interceptors.response.use(
         return response;
     },
     (error) => {
+        console.log(error.response.data)
+        if (error.response.data === "refreshToken is expired") {
+            store.dispatch('logout'); // 로그아웃 액션 호출
+        }
         return Promise.reject(error);
     }
 );
