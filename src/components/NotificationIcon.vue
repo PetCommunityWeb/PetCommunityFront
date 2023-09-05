@@ -1,7 +1,9 @@
 <template>
-  <div>
+  <div style="position: relative;"> <!-- 1번 조치: 알림 아이콘을 포함한 부모 요소에 position: relative를 추가합니다. -->
     <!-- Notification icon -->
     <v-icon @click="toggleNotifications">mdi-bell</v-icon>
+    <!-- Display unread notifications count -->
+    <span v-if="unreadCount" class="unread-badge">{{ unreadCount }}</span>
     <!-- Dropdown menu for notifications -->
     <div v-if="showNotifications" class="notifications-dropdown">
       <div v-for="notification in notifications" :key="notification.id" class="notification-item" :class="{ 'read': notification.read }">
@@ -9,7 +11,6 @@
 
         <!-- ... 아이콘 -->
         <v-icon @click="toggleActions(notification.id)">mdi-dots-horizontal</v-icon>
-
         <!-- 액션 아이콘 및 문구 (기본적으로 숨겨진 상태) -->
         <div v-if="notification.showActions">
           <v-icon @click="readNotification(notification.id)">mdi-check</v-icon> 읽음처리
@@ -27,8 +28,12 @@ export default {
   data() {
     return {
       showNotifications: false,
-      notifications: []
+      notifications: [],
+      unreadCount: 0 // 안 읽은 알림의 수를 저장할 변수
     }
+  },
+  mounted() {
+    this.fetchNotifications();
   },
   filters: {
     formatTime(value) {
@@ -57,6 +62,7 @@ export default {
             notification.showActions = false;
             return notification;
           });
+          this.unreadCount = this.notifications.filter(n => !n.read).length;
         })
         .catch(error => {
           console.error("Error fetching notifications:", error);
@@ -67,10 +73,7 @@ export default {
           .then(response => {
             console.log(response.data);
             // 알림 상태를 '읽음'으로 변경
-            const notification = this.notifications.find(n => n.id === notificationId);
-            if (notification) {
-              notification.read = true;
-            }
+            this.fetchNotifications();
           })
           .catch(error => {
             console.error("Error reading notification:", error);
@@ -82,7 +85,7 @@ export default {
           .then(response => {
             console.log(response.data);
             // 알림 목록에서 해당 알림 삭제
-            this.notifications = this.notifications.filter(n => n.id !== notificationId);
+            this.fetchNotifications();
           })
           .catch(error => {
             console.error("Error deleting notification:", error);
@@ -94,11 +97,11 @@ export default {
 
 <style scoped>
 .notifications-dropdown {
-  /* Add your dropdown styling here */
+  /* 기존 스타일 유지 */
   display: block;
-  position: absolute;
-  top: 25px;
-  right: 0;
+  position: absolute;   /* 2번 조치: position을 absolute로 설정합니다. */
+  top: 100%;           /* 2번 조치: 알림 아이콘 바로 아래에 나타나도록 top 값을 조정합니다. */
+  left: 0;            /* 만약 오른쪽 정렬을 유지하고 싶다면 right 값을 0으로 설정합니다. */
   width: 300px;
   border: 1px solid #ccc;
   background-color: white;
@@ -109,7 +112,18 @@ export default {
   padding: 10px;
   border-bottom: 1px solid #eee;
 }
-
+.unread-badge {
+  position: absolute;
+  top: 0;
+  right: 0;
+  background-color: red;
+  color: white;
+  border-radius: 50%;
+  padding: 2px 6px;
+  font-size: 12px;
+  font-weight: bold;
+  transform: translate(50%, -50%);
+}
 .read {
   color: #aaa;  /* 연한 색으로 변경 */
 }
