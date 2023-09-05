@@ -5,7 +5,7 @@
                 <v-img src="paw.png" class="mr-2"></v-img>
             </router-link>
         </v-toolbar-title>
-        <NotificationIcon v-if="isLoggedIn"></NotificationIcon>
+        <NotificationIcon v-if="isLoggedIn" class="ml-16"></NotificationIcon>
 
         <v-spacer></v-spacer>
         <div>
