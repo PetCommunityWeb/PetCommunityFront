@@ -1,7 +1,7 @@
 <template>
     <v-container>
         <h1 style="margin:15px 0 15px 0;" align="center">실시간 상담</h1>
-        <p align="center">동물 전문가와 1:1 상담을 할 수 있습니다.</p>
+        <p align="center">동물 전문가와 상담을 할 수 있습니다.</p>
         <!--        방 생성-->
         <v-row class="mb-4">
             <v-col cols="12" sm="6" md="4">
@@ -27,6 +27,11 @@
                         <v-list-item-content>
                             <v-list-item-title>{{ room.roomName }}</v-list-item-title>
                         </v-list-item-content>
+                        <v-list-item-action>
+                          <v-btn icon @click.stop="deleteRoom(room.uuid)">
+                            <v-icon color="red">mdi-close</v-icon>
+                          </v-btn>
+                        </v-list-item-action>
                     </v-list-item>
                 </v-card>
             </v-col>
@@ -81,8 +86,16 @@ export default {
             }
         },
         enterRoom(uuid) {
-            console.log(uuid)
             this.$router.push({name: 'ChatRoom', params: {uuid}});
+        },
+        async deleteRoom(uuid) {
+          try {
+            await axios.delete(`/chat?uuid=${uuid}`);
+            this.fetchRooms();  // 삭제 후 방 목록을 다시 가져옵니다.
+          } catch (error) {
+            alert(error.response.data.msg);
+            console.error('Failed to delete the room:', error);
+          }
         }
     }
 };
