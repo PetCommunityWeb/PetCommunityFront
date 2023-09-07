@@ -92,9 +92,8 @@ export default {
           try {
             await axios.delete(`/chat?uuid=${uuid}`);
             this.fetchRooms();  // 삭제 후 방 목록을 다시 가져옵니다.
+            // eslint-disable-next-line no-empty
           } catch (error) {
-            alert(error.response.data.msg);
-            console.error('Failed to delete the room:', error);
           }
         }
     }

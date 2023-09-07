@@ -36,7 +36,7 @@ instance.interceptors.response.use(
         return response;
     },
     (error) => {
-        console.log(error.response.data)
+        alert(error.response.data.msg)
         if (error.response.data === "refreshToken is expired") {
             store.dispatch('logout'); // 로그아웃 액션 호출
         }
