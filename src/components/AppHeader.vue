@@ -2,7 +2,7 @@
     <v-app-bar app color="beige">
         <v-toolbar-title className="white--text">
             <router-link to="/" class="toolbar-title-link">
-                <v-img src="paw.png" class="mr-2"></v-img>
+                <v-img src="/paw.png" class="mr-2"></v-img>
             </router-link>
         </v-toolbar-title>
         <NotificationIcon v-if="isLoggedIn" class="ml-16"></NotificationIcon>
