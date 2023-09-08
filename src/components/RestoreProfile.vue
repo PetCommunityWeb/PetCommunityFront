@@ -88,6 +88,7 @@ export default {
 
                 if (response.status === 200) {
                     console.log("데이터 복구 성공");
+                    alert("회원 데이터가 복구되었습니다. 로그인 해주세요.");
                     // 성공 시 사용자에게 알림 또는 리디렉션 등을 수행할 수 있음
                 } else {
                     console.error("데이터 복구 실패");
