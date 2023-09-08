@@ -16,6 +16,7 @@ import SignUp from "@/views/SignUp";
 import HospitalManagement from "@/views/HospitalManagement";
 import HospitalDetail from "@/views/HospitalDetail";
 import IntroPage from "@/views/IntroPage.vue";
+import RestoreProfile from "@/components/RestoreProfile.vue";
 
 Vue.use(Router);
 Vue.use(Vuex)
@@ -84,6 +85,11 @@ const routes = [
         path: '/hospital/:id',
         name: 'HospitalDetail',
         component: HospitalDetail
+    },
+    {
+        path:'/restoreProfile',
+        name:'restoreProfile',
+        component: RestoreProfile
     },
     {
         path: '*',  // 기본 경로 설정
