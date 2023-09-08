@@ -228,8 +228,8 @@ export default {
           // 서버에서 반환된 새로운 피드 데이터를 클라이언트의 상태에 추가
           this.feeds.push(response.data);
           this.dialog = false;
+          // eslint-disable-next-line no-empty
         } catch (error) {
-          alert(error.response.data);
         }
       }
     },
@@ -239,8 +239,8 @@ export default {
       try {
         const response = await axios.get("/feeds");
         this.feeds = response.data;
+        // eslint-disable-next-line no-empty
       } catch (error) {
-        console.error("Error fetching feeds:", error);
       }
     },
 
@@ -250,8 +250,8 @@ export default {
         const response = await axios.get(`/feeds/${id}`);
         this.feedDetail = response.data;
         this.feedDetailDialog = true; // 모달 열기
+        // eslint-disable-next-line no-empty
       } catch (error) {
-        console.error("Error fetching feed detail:", error);
       }
     },
 
@@ -274,9 +274,9 @@ export default {
         this.feedDetail.comments.push(newComment);
         this.newCommentContent = ''; // 댓글 입력 초기화
         this.fetchFeeds(); // 컴포넌트가 생성될 때 피드를 로드
+        this.showFeedDetail(feedId);
+        // eslint-disable-next-line no-empty
       } catch (error) {
-        console.error("Error posting comment:", error);
-        alert('댓글 작성 중 오류가 발생했습니다. 다시 시도해 주세요.');
       }
     },
 
@@ -297,8 +297,9 @@ export default {
           alert(response.data.msg);
         }
         // this.showFeedDetail(feedId);  // 좋아요 후 피드 상세 정보 다시 로드
+        // eslint-disable-next-line no-empty
       } catch (error) {
-        alert('좋아요 중 오류가 발생했습니다. 다시 시도해 주세요.');
+
       }
     },
 
@@ -329,8 +330,8 @@ export default {
           else {
             alert(response.data.msg);
           }
+          // eslint-disable-next-line no-empty
         } catch (error) {
-          alert('피드 수정 중 오류가 발생했습니다. 다시 시도해 주세요.');
         }
       }
     },
@@ -347,8 +348,8 @@ export default {
           alert(response.data.msg);
           this.feedDetailDialog = false;
         }
+        // eslint-disable-next-line no-empty
       } catch (error) {
-        alert('피드 삭제 중 오류가 발생했습니다. 다시 시도해 주세요.');
       }
     },
 
@@ -358,12 +359,13 @@ export default {
         const response = await axios.delete(`/comments/${commentId}`);
         if (response.data.statusCode === 200) {
           this.feedDetail.comments = this.feedDetail.comments.filter(comment => comment.id !== commentId);
+          this.fetchFeeds(); // 컴포넌트가 생성될 때 피드를 로드
         }
         else {
           alert(response.data.msg);
         }
+        // eslint-disable-next-line no-empty
       } catch (error) {
-        alert('댓글 삭제 중 오류가 발생했습니다. 다시 시도해 주세요.');
       }
     },
 
@@ -398,9 +400,8 @@ export default {
         }
         this.editingCommentId = null; // 수정 모드 종료
         this.newCommentContent = ''; // 댓글 입력 초기화
+        // eslint-disable-next-line no-empty
       } catch (error) {
-        console.error("Error editing comment:", error);
-        alert('댓글 수정 중 오류가 발생했습니다. 다시 시도해 주세요.');
       }
     },
   },

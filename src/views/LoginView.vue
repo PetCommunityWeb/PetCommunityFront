@@ -19,7 +19,8 @@
           ></v-text-field>
           <v-card-actions>
             <v-btn color="blue darken-1" dark @click="login">로그인</v-btn>
-            <v-btn text color="green" @click="goToSignUp">회원가입</v-btn>
+            <v-btn text color="green" @click="goToSignUp">회원 가입</v-btn>
+            <v-btn text color="red"  @click="goToRecovery"> 탈퇴 회원 복구</v-btn>
           </v-card-actions>
           <div class="form-group d-flex justify-content-center">
             <a href="http://localhost:8080/oauth2/authorize/google?redirect_uri=http://localhost:8080/login/oauth2/code/google">
@@ -41,6 +42,8 @@
 
 <script>
 import axios from "@/axios/axios-instance";
+import Cookies from 'js-cookie';
+import store from "@/store"; // Vuex 스토어를 임포트합니다.
 
 export default {
   name: "LoginView",
@@ -57,28 +60,25 @@ export default {
         password: this.password,
       };
       try {
-        await axios.post("/users/login", data)
-            .then(response => {
-                  console.log(response.headers)
-                  const accessToken = response.headers.get("authorization")
-                  window.localStorage.setItem('accessToken', accessToken)
-
-                  // const refreshToken = response.headers.get("RefreshToken");
-                  // if (accessToken !== undefined && refreshToken !== undefined) {
-                  //   window.localStorage.setItem('accessToken', accessToken)
-                  //   Cookies.set("refreshToken", refreshToken)
-                  //   window.location.href = '/home'
-                  // }
-                  this.$router.push("/");
-                }
-            )
+        const response = await axios.post("/users/login", data);
+        const accessToken = response.headers['authorization'];
+        const refreshToken = response.headers.get('refreshToken')
+        if (accessToken && refreshToken) {
+          console.log("성공")
+          window.localStorage.setItem('accessToken', accessToken);
+          Cookies.set("refreshToken", refreshToken, { expires: 7 }); // expires: 유지 시간 (일 단위)
+          await this.$router.push("/");
+        }
+        // eslint-disable-next-line no-empty
       } catch (error) {
-        alert(error.response.data)
-        console.log(error.response.data);
       }
     },
     goToSignUp() {
       this.$router.push("/signup");  // 회원가입 라우트로 이동합니다. 경로는 필요에 따라 변경해주세요.
+    },
+    goToRecovery() {
+        this.$router.push("/restoreProfile")
+
     }
   }
 };

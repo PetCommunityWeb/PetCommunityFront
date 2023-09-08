@@ -2,10 +2,9 @@
   <div>
     <v-app>
       <v-container>
+          <h1 align="center" style="margin:15px 0 15px 0;">커뮤니티</h1>
         <v-row justify="center" class="text-center mt-3"> <!-- mt-3 추가 -->
-          <v-col cols="12" class="mb-0">
-            <h1>커뮤니티</h1>
-          </v-col>
+
           <v-col cols="auto" class="mb-0">
             <router-link to="/community/feed">
               <v-btn color="primary" dark>Feed</v-btn>

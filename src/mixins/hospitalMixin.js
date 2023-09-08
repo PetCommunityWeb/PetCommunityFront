@@ -7,8 +7,8 @@ export default {
             try {
                 const response = await axios.get("/hospitals/my-hospitals");
                 this.myHospitals = response.data;  // 응답 데이터를 myHospitals에 저장
+                // eslint-disable-next-line no-empty
             } catch (error) {
-                console.error("Failed to fetch my hospitals:", error);
             }
         },
         handleFileChange(file) {
@@ -57,10 +57,11 @@ export default {
             console.log('병원 등록:', this.hospital);
             try {
                 await axios.post("/hospitals", this.hospital)
+                // eslint-disable-next-line no-empty
             } catch (error) {
-                console.log(error)
             }
             this.dialog = false;
+            await this.fetchMyHospitals();
         },
         async convertAddressToCoordinates() {
             try {
@@ -69,8 +70,8 @@ export default {
                 // 얻어진 위도와 경도를 데이터에 저장
                 this.hospital.latitude = coordinates.latitude;
                 this.hospital.longitude = coordinates.longitude;
+                // eslint-disable-next-line no-empty
             } catch (error) {
-                console.error('Failed to convert address to coordinates:', error);
             }
         },
         async fetchCoordinatesFromAPI(address) {

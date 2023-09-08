@@ -2,8 +2,7 @@ import Vue from 'vue';
 import Vuex from 'vuex'
 import Router from 'vue-router';
 import axios from "@/axios/axios-instance";
-import store from '@/store';  // 스토어 임포트
-
+import store from '@/store'; // 스토어 임포트
 import FindHospital from '@/views/FindHospital.vue';
 import RealtimeConsult from '@/views/RealtimeConsult.vue';
 import ChatRoom from "@/views/ChatRoom";
@@ -19,10 +18,17 @@ import HospitalDetail from "@/views/HospitalDetail";
 import TipDetail from "@/components/TipDetail.vue";
 import TipCreate from "@/components/TipCreate.vue";
 import TipEdit from "@/components/TipEdit.vue";
+import IntroPage from "@/views/IntroPage.vue";
+import RestoreProfile from "@/components/RestoreProfile.vue";
 
 Vue.use(Router);
 Vue.use(Vuex)
 const routes = [
+    {
+        path: '/',
+        name: 'Home',
+        component: IntroPage // 홈페이지 컴포넌트를 연결
+    },
     {
         path: '/find-hospital',
         name: 'FindHospital',
@@ -102,9 +108,14 @@ const routes = [
         component: HospitalDetail
     },
     {
+        path:'/restoreProfile',
+        name:'restoreProfile',
+        component: RestoreProfile
+    },
+    {
         path: '*',  // 기본 경로 설정
         redirect: '/find-hospital'
-    }
+    },
 ];
 
 const router = new Router({
@@ -119,25 +130,28 @@ const router = new Router({
 );
 
 router.beforeEach((to, from, next) => {
-    // 백엔드에 요청을 보냅니다.
-    axios.get('/users/my-profile')
-        .then(response => {
-            const user = response.data;
-            console.log(user)
-            store.commit('setId', user.id)
-            store.commit('setUsername', user.username)
-            store.commit('setUserRole', user.role);
-            store.commit('setNickname', user.nickname);
-            store.commit('setImageUrl', user.imageUrl);
-            store.commit('setEmail', user.email);
-            next(); // 요청이 성공하면 다음 라우터로 이동합니다.
-        })
-        .catch(error => {
-            console.error("Error checking user:", error);
-            // 사용자 확인이 실패하면 로그인 페이지로 리다이렉트 할 수 있습니다.
-            // next('/login');
-            next(); // 혹은 그냥 다음 라우터로 이동합니다.
-        });
+    // Call your axios function here
+    const accessToken = localStorage.getItem('accessToken');
+    if (accessToken) {
+        axios.get('/users/my-profile')
+            .then(response => {
+                const user = response.data;
+                // console.log(user);
+                store.commit('setId', user.id);
+                store.commit('setUsername', user.username);
+                store.commit('setUserRole', user.role);
+                store.commit('setNickname', user.nickname);
+                store.commit('setImageUrl', user.imageUrl);
+                store.commit('setEmail', user.email);
+            })
+            .catch(() => {
+                console.log("로그인한 회원이 아닙니다.");
+            })
+            .finally(() => {
+                next();  // This ensures the navigation continues after you're done fetching the data
+            });
+    } else {
+        next();
+    }
 });
-
 export default router;

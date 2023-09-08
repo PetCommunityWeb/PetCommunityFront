@@ -1,18 +1,23 @@
 <template>
   <v-container class="hospital-management-container">
-    <h1>병원 관리</h1>
     <!-- 소유하고 있는 병원 목록 -->
+    <h1>병원 관리</h1>
     <div class="my-hospitals-list">
-      <v-row>
-        <v-col cols="12" sm="6" md="4" v-for="hospital in myHospitals" :key="hospital.id">
+      <v-row class="fill-height">
+        <v-col cols="12" md="4" v-for="hospital in myHospitals" :key="hospital.id">
           <router-link :to="`/hospital/${hospital.id}`">
-            <v-card class="fixed-size-card">
+            <v-card>
               <v-img :src="hospital.imageUrl" alt="Hospital Image" height="200px"></v-img>
               <v-card-title>{{ hospital.name }}</v-card-title>
               <v-card-subtitle>{{ hospital.address }}</v-card-subtitle>
               <v-card-text>
                 <p>{{ hospital.introduction }}</p>
                 <p><strong>전화번호:</strong> {{ hospital.phoneNumber }}</p>
+                <!-- 운영 요일을 표시하는 부분 -->
+                <p><strong>운영 요일:</strong></p>
+                <v-chip-group column>
+                  <v-chip v-for="day in getKoreanDays(hospital.operatingDays)" :key="day" small>{{ day }}</v-chip>
+                </v-chip-group>
               </v-card-text>
               <v-card-actions>
                 <v-chip v-for="species in hospital.speciesEnums" :key="species" small>{{ species }}</v-chip>
@@ -23,9 +28,7 @@
         </v-col>
       </v-row>
     </div>
-
-
-    <v-btn @click="dialog = true">병원 등록하기</v-btn>
+    <v-btn @click="dialog = true" style="margin-top: 50px">병원 등록하기</v-btn>
     <v-dialog v-model="dialog" max-width="500px">
       <v-card>
         <v-card-title>
@@ -69,6 +72,13 @@
                     multiple
                 ></v-select>
               </v-col>
+              <v-col cols="12">
+                <v-row>
+                  <v-col v-for="day in days" :key="day.value" cols="12" sm="4">
+                    <v-checkbox v-model="hospital.operatingDays" :label="day.text" :value="day.value"></v-checkbox>
+                  </v-col>
+                </v-row>
+              </v-col>
             </v-row>
           </v-container>
         </v-card-text>
@@ -79,16 +89,26 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
-  </v-container>
+    </v-container>
 </template>
 
 <script>
 import hospitalMixin from "@/mixins/hospitalMixin";
+
 export default {
   name: "HospitalManagement",
   mixins: [hospitalMixin],
   data() {
     return {
+      days: [  // 요일 정보
+        { text: '월요일', value: 'MONDAY' },
+        { text: '화요일', value: 'TUESDAY' },
+        { text: '수요일', value: 'WEDNESDAY' },
+        { text: '목요일', value: 'THURSDAY' },
+        { text: '금요일', value: 'FRIDAY' },
+        { text: '토요일', value: 'SATURDAY' },
+        { text: '일요일', value: 'SUNDAY' },
+      ],
       hospital: {
         id: "",
         name: "",
@@ -99,7 +119,8 @@ export default {
         address: "",
         phoneNumber: "",
         speciesEnums: [],
-        subjectEnums: []
+        subjectEnums: [],
+        operatingDays: [],
       },
       dialog: false,
       speciesEnums: ['강아지', '고양이', '기타'],  // 예시입니다. 실제 값을 기입해주세요.
@@ -115,30 +136,34 @@ export default {
     await this.fetchMyHospitals();  // 병원 목록 가져오기
   },
   methods: {
+    getKoreanDays(englishDays) {
+      return englishDays.map(englishDay => {
+        const matchingDay = this.days.find(day => day.value === englishDay);
+        return matchingDay ? matchingDay.text : englishDay;
+      });
+    },
   },
 }
 </script>
 
-<style scoped>
+<style>
 .hospital-management-container {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   height: 100vh;
+  width: 100%;
 }
 
 .my-hospitals-list {
-  margin-bottom: 20px;
+  width: 100%;
+  max-width: 1200px;  /* 원하는 최대 폭으로 조정하실 수 있습니다. */
+  margin: 0 auto;     /* 중앙 정렬 */
 }
 
 .my-hospitals-list ul {
   list-style-type: none;
   padding-left: 0;
-}
-
-.fixed-size-card {
-  width: 300px;
-  height: 450px;
 }
 </style>
