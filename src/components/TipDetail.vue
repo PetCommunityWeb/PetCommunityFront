@@ -107,10 +107,9 @@ export default {
       const id = this.$route.params.id;
       try {
         const response = await axios.get(`/tips/${id}`);
-        const username = response.data.user ? response.data.user.id : null;
-
+        const username = response.data.username ? response.data.username : null;
         // 현재 사용자의 ID를 가져와서 작성자와 비교
-        if (this.$store.state.id === username) {
+        if (this.$store.state.username === username) {
           // 현재 사용자가 작성자인 경우에만 수정 페이지로 이동
           await this.$router.push(`/community/tip/edit/${id}`);
         } else {

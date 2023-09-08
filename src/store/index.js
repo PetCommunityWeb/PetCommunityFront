@@ -18,8 +18,6 @@ export default new Vuex.Store({
         liked: false,
         likes: {}, // 좋아요 상태를 객체로 저장
         // currentUserId: null, // 현재 사용자의 ID를 저장할 상태 속성
-
-
     },
     mutations: {
         setId(state, id) {

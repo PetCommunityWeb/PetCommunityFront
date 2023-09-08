@@ -1,7 +1,6 @@
 <template>
   <v-container>
     <v-data-table
-        :key="tips"
         :headers="headers"
         :items="tips"
         :items-per-page="10"
@@ -35,18 +34,15 @@ export default {
   methods: {
     async fetchTips() {
       try {
-        this.requestBody = {
-          title: this.title,
-          username: this.username,
-          likeCount: this.likeCount,
-          page: this.page
-        };
+        // this.requestBody = {
+        //   title: this.title,
+        //   username: this.username,
+        //   likeCount: this.likeCount,
+        //   page: this.page
+        // };
 
-        const response = await axios.get("/tips", {
-          params: this.requestBody
-        });
-
-        // this.tips = response.data;
+        const response = await axios.get("/tips");
+        console.log(response)
         this.tips = response.data.map(item => ({ ...item, username: item.username }));
       } catch (error) {
         console.error("Error fetching tips:", error);
