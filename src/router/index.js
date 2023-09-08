@@ -15,6 +15,9 @@ import MyPage from '@/views/MyPage.vue';
 import SignUp from "@/views/SignUp";
 import HospitalManagement from "@/views/HospitalManagement";
 import HospitalDetail from "@/views/HospitalDetail";
+import TipDetail from "@/components/TipDetail.vue";
+import TipCreate from "@/components/TipCreate.vue";
+import TipEdit from "@/components/TipEdit.vue";
 import IntroPage from "@/views/IntroPage.vue";
 import RestoreProfile from "@/components/RestoreProfile.vue";
 
@@ -56,6 +59,24 @@ const routes = [
             }
         ]
     },
+
+    {
+        path: '/community/tip/create',
+        name: 'TipCreate',
+        component: TipCreate,
+    },
+    {
+        path: '/community/tip/:id',
+        name: 'TipDetail',
+        component: TipDetail
+    },
+    {
+        path: '/community/tip/edit/:id',
+        name: 'TipEdit',
+        component: TipEdit
+    },
+
+
     {
         path: '/pet-service',
         name: 'PetService',
@@ -100,7 +121,13 @@ const routes = [
 const router = new Router({
     mode: 'history',
     routes
-});
+},
+    {
+        path: '/community/tip/edit/:id',
+        name: 'TipEdit',
+        component: () => import('@/components/TipEdit.vue'),
+    },
+);
 
 router.beforeEach((to, from, next) => {
     // Call your axios function here
