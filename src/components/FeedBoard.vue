@@ -274,6 +274,7 @@ export default {
         this.feedDetail.comments.push(newComment);
         this.newCommentContent = ''; // 댓글 입력 초기화
         this.fetchFeeds(); // 컴포넌트가 생성될 때 피드를 로드
+        this.showFeedDetail(feedId);
         // eslint-disable-next-line no-empty
       } catch (error) {
       }
@@ -358,6 +359,7 @@ export default {
         const response = await axios.delete(`/comments/${commentId}`);
         if (response.data.statusCode === 200) {
           this.feedDetail.comments = this.feedDetail.comments.filter(comment => comment.id !== commentId);
+          this.fetchFeeds(); // 컴포넌트가 생성될 때 피드를 로드
         }
         else {
           alert(response.data.msg);
