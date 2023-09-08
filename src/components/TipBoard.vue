@@ -21,7 +21,7 @@
 
 <script>
 import axios from "@/axios/axios-instance";
-import AWS from 'aws-sdk';
+// import AWS from 'aws-sdk';
 import {mapState} from "vuex";
 
 export default {
@@ -38,6 +38,7 @@ export default {
         this.requestBody = {
           title: this.title,
           username: this.username,
+          likeCount: this.likeCount,
           page: this.page
         };
 
@@ -64,7 +65,7 @@ export default {
       headers: [
         { text: 'Title', value: 'title' },
         { text: 'Username', value: 'username' },
-        { text: 'Like', value: 'tipLike'}
+        { text: 'Like', value: 'likeCount'}
         // { text: 'Reg Date', value: 'regDt' }
       ],
       tips: [],

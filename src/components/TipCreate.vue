@@ -11,7 +11,7 @@
             name="title"
             required
             v-model="title"
-            maxlength="100"
+        maxlength="100"
         ></v-text-field>
       </v-row>
       <v-row>
@@ -23,8 +23,8 @@
             name="content"
             hint="내용을 입력해주세요."
             v-model="content"
-            :counter="10000"
-            maxlength="10000"
+        :counter="10000"
+        maxlength="10000"
         ></v-textarea>
       </v-row>
       <v-row>
@@ -46,10 +46,19 @@ import AWS from 'aws-sdk';
 
 export default {
   name: 'TipCreate',
+  data() {
+    return {
+      title: '',   // 데이터 속성 추가
+      content: '', // 데이터 속성 추가
+      selectedImage: null,
+    };
+  },
   methods: {
     async writeClick() {
-      if (this.selectedImage) {
-        try {
+      try {
+        let response;
+
+        if (this.selectedImage) {
           const s3 = new AWS.S3({
             accessKeyId: process.env.VUE_APP_AWS_ACCESS_KEY,
             secretAccessKey: process.env.VUE_APP_AWS_SECRET_KEY,
@@ -77,58 +86,35 @@ export default {
           };
 
           // Tip 생성 요청 보내기
-          const response = await axios.post('/tips/create', postData);
-          console.log(response);
-          await this.$router.push('/create');
-        } catch (error) {
-          console.log(error);
-          alert('이미지 업로드 중 오류가 발생했습니다.');
-        }
-      } else {
-        if (this.$route.params.seq) {
-          axios.put('/tips/create', this.$data)
-              .then((response) => {
-                console.log(response)
-                this.$router.push('/create')
-              })
-              .catch((error) => {
-                console.log(error)
-              })
+          response = await axios.post('/tips/create', postData);
         } else {
-          // this.$data.regDt = this.getNowDate()
-          // this.$data.uptDt = this.getNowDate()
-          axios.post('/tips/create', this.$data)
-              .then((response) => {
-                console.log(response)
-                this.$router.push('/create')
-              })
-              .catch((error) => {
-                console.log(error)
-              })
+          // 이미지가 없는 경우
+          const postData = {
+            title: this.title,
+            content: this.content,
+            imageUrl: null,
+          };
+
+          // Tip 생성 요청 보내기
+          response = await axios.post('/tips/create', postData);
         }
+
+        console.log(response); // 성공 시 응답 확인
+
+        // 글 작성 완료 후 사용자를 작성된 글 페이지로 리디렉션
+        if (response.status === 200) {
+          await this.$router.push(`/community/tip/${response.data.id}`); // 작성된 글 페이지로 이동
+        } else {
+          alert('글 작성 중 오류가 발생했습니다.');
+        }
+      } catch (error) {
+        console.error(error);
+        alert('글 작성 중 오류가 발생했습니다.');
       }
     },
     handleFileChange(event) {
       this.selectedImage = event.target.files[0];
     },
   },
-    // getNowDate() {
-      // var nowDate = new Date()
-      // var year = nowDate.getFullYear().toString()
-      // var month = (nowDate.getMonth() + 1).toString()
-      // var day = nowDate.getDate().toString()
-      //
-      // return year + "-" + (month[1] ? month : "0" + month[0]) + "-" + (day[1] ? day : "0" + day[0])
-    // }
-  data () {
-    return {
-      title : '',
-      content: '',
-      // uptDt: '',
-      // regDt: ''
-      selectedImage: null,
-
-    }
-  }
-}
+};
 </script>

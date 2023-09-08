@@ -21,6 +21,17 @@
             <v-btn color="blue darken-1" dark @click="login">로그인</v-btn>
             <v-btn text color="green" @click="goToSignUp">회원가입</v-btn>
           </v-card-actions>
+          <div class="form-group d-flex justify-content-center">
+            <a href="http://localhost:8080/oauth2/authorize/google?redirect_uri=http://localhost:8080/login/oauth2/code/google">
+              <img class="bi me2" width="55" height="55" src="../assets/google.png" />
+            </a>
+            <a href="http://localhost:8080/oauth2/authorize/naver?redirect_uri=http://localhost:8080/login/ouath2/code/naver">
+              <img class="bi me2" width="55" height="55" src="../assets/naver.png" />
+            </a>
+            <a href="http://localhost:8080/oauth2/authorize/kakao?redirect_uri=http://localhost:8080/login/oauth2/code/kakao">
+              <img class="bi me2" width="55" height="55" src="../assets/kakao.png" />
+            </a>
+          </div>
         </v-card>
       </v-col>
     </v-row>
