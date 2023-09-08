@@ -9,17 +9,25 @@ export default new Vuex.Store({
     state: {
         id: null,
         username: null,
+        user: null,
         role: null,
         nickname: null,
         email: null,
-        imageUrl: null
+        imageUrl: null,
+        likeCount: 0,
+        liked: false,
+        likes: {}, // 좋아요 상태를 객체로 저장
+        // currentUserId: null, // 현재 사용자의 ID를 저장할 상태 속성
     },
     mutations: {
         setId(state, id) {
-          state.id = id;
+            state.id = id;
         },
-        setUsername(state, username){
-          state.username = username;
+        setUsername(state, username) {
+            state.username = username;
+        },
+        setUser(state, user) {
+            state.user = user;
         },
         setUserRole(state, role) {
             state.role = role;
@@ -40,7 +48,14 @@ export default new Vuex.Store({
             state.nickname = null;
             state.email = null;
             state.imageUrl = null;
-        }
+        },
+        setLike(state, { postId, liked }) {
+            // 좋아요 상태 업데이트
+            Vue.set(state.likes, postId, liked);
+        },
+        updateLike(state, { postId, liked }) {
+            Vue.set(state.likes, postId, liked);
+        },
     },
     actions: {
         logout({ commit }) {
