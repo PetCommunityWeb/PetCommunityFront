@@ -19,7 +19,8 @@
           ></v-text-field>
           <v-card-actions>
             <v-btn color="blue darken-1" dark @click="login">로그인</v-btn>
-            <v-btn text color="green" @click="goToSignUp">회원가입</v-btn>
+            <v-btn text color="green" @click="goToSignUp">회원 가입</v-btn>
+            <v-btn text color="red"  @click="goToRecovery"> 탈퇴 회원 복구</v-btn>
           </v-card-actions>
         </v-card>
       </v-col>
@@ -63,6 +64,10 @@ export default {
     },
     goToSignUp() {
       this.$router.push("/signup");  // 회원가입 라우트로 이동합니다. 경로는 필요에 따라 변경해주세요.
+    },
+    goToRecovery() {
+        this.$router.push("/restoreProfile")
+
     }
   }
 };

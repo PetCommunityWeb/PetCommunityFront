@@ -155,7 +155,7 @@
                             required
                     ></v-text-field>
 
-                    정말로 회원 탈퇴하시겠습니까? 이 작업은 되돌릴 수 없습니다.
+                    정말로 탈퇴하시겠습니까? 이 작업은 되돌릴 수 없습니다.
                 </v-card-text>
                 <v-card-actions>
                     <v-btn text @click="showConfirmDialog = false">취소</v-btn>
