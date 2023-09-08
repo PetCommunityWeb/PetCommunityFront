@@ -57,8 +57,8 @@ export default {
           Cookies.set("refreshToken", refreshToken, { expires: 7 }); // expires: 유지 시간 (일 단위)
           await this.$router.push("/");
         }
+        // eslint-disable-next-line no-empty
       } catch (error) {
-        alert(error.response.data.msg);
       }
     },
     goToSignUp() {

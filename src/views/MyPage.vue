@@ -403,8 +403,8 @@ export default {
                 // 백엔드 API 호출하여 사용자가 작성한 글 목록 가져오기
                 const response = await axios.get('/feeds/my-feeds'); // API 엔드포인트에 맞게 수정
                 this.myFeed = response.data; // 가져온 글 목록을 데이터에 저장
+              // eslint-disable-next-line no-empty
             } catch (error) {
-                console.error('Error fetching user posts:', error);
             }
         }
         ,
@@ -414,8 +414,8 @@ export default {
                 const response = await axios.get(`/feeds/${id}`);
                 this.feedDetail = response.data;
                 this.feedDetailDialog = true; // 모달 열기
+              // eslint-disable-next-line no-empty
             } catch (error) {
-                console.error("Error fetching feed detail:", error);
             }
         },
         confirmWithdrawal() {

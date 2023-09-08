@@ -240,8 +240,8 @@ export default {
       slot.reserved = true;
       try {
         await axios.post('/reservations', requestData)
+        // eslint-disable-next-line no-empty
       } catch (error) {
-        alert('예약 중 오류 발생:' + error.response.data.msg);
       }
     },
     async fetchAvailableTimes() {
@@ -253,8 +253,8 @@ export default {
           }
         });
         this.availableSlots = response.data;
+        // eslint-disable-next-line no-empty
       } catch (error) {
-        console.error("Failed to fetch available slots:", error);
       }
     },
     openEditHospital() {
@@ -279,8 +279,8 @@ export default {
           this.editHospitalDialog = false;
         }
         // 성공 알림 또는 리프레시 로직 추가
+        // eslint-disable-next-line no-empty
       } catch (error) {
-        console.error("Failed to update hospital:", error);
       }
     },
     async deleteHospital() {
@@ -301,9 +301,8 @@ export default {
         const response = await axios.get(`/hospitals/${hospitalId}`);
         this.hospital = response.data;
         console.log(this.hospital)
+        // eslint-disable-next-line no-empty
       } catch (error) {
-        console.error("Failed to fetch hospital details:", error);
-        // 에러 처리를 적절하게 하세요. 예: 사용자에게 오류 메시지 표시
       }
     },
     openAppointmentModal() {
@@ -326,8 +325,8 @@ export default {
       try {
         await axios.post("/reservation-slot", requestData);
         await this.fetchAvailableTimes();  // 새로운 예약 슬롯을 추가한 후 사용 가능한 예약 슬롯 목록을 갱신
+        // eslint-disable-next-line no-empty
       } catch (error) {
-        console.error("Failed to add appointment slot:", error);
       }
     },
     async convertAddressToCoordinates() {
@@ -337,8 +336,8 @@ export default {
         // 얻어진 위도와 경도를 데이터에 저장
         this.editHospitalData.latitude = coordinates.latitude;
         this.editHospitalData.longitude = coordinates.longitude;
+        // eslint-disable-next-line no-empty
       } catch (error) {
-        console.error('Failed to convert address to coordinates:', error);
       }
     },
     openKakaoAddressSearch() {
