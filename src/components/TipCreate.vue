@@ -2,39 +2,48 @@
   <v-form>
     <v-container>
       <v-row>
-        제목
+        <v-col cols="12">
+          <v-text-field
+              :counter="100"
+              label="제목"
+              name="title"
+              required
+              v-model="title"
+              maxlength="100"
+          ></v-text-field>
+        </v-col>
       </v-row>
       <v-row>
-        <v-text-field
-            :counter="100"
-            label="제목"
-            name="title"
-            required
-            v-model="title"
-        maxlength="100"
-        ></v-text-field>
+        <v-col cols="12">
+          <v-textarea
+              filled
+              name="content"
+              label="내용"
+              hint="내용을 입력해주세요."
+              v-model="content"
+              :counter="10000"
+              maxlength="10000"
+          ></v-textarea>
+        </v-col>
       </v-row>
       <v-row>
-        내용
+        <v-col cols="12">
+<!--          <v-file-input-->
+<!--              accept="image/*"-->
+<!--              @change="handleFileChange"-->
+<!--              label="이미지 선택"-->
+<!--              show-size-->
+<!--              prepend-icon="mdi-camera"-->
+<!--              outlined-->
+<!--          ></v-file-input>-->
+          <v-label class="mb-2"><v-icon left>mdi-camera</v-icon></v-label>
+          <input type="file" accept="image/*" @change="handleFileChange" />
+        </v-col>
       </v-row>
       <v-row>
-        <v-textarea
-            filled
-            name="content"
-            hint="내용을 입력해주세요."
-            v-model="content"
-        :counter="10000"
-        maxlength="10000"
-        ></v-textarea>
-      </v-row>
-      <v-row>
-        <v-btn block outlined color="blue" @click="writeClick"> 등록 </v-btn>
-      </v-row>
-      <v-row>
-        사진
-      </v-row>
-      <v-row>
-        <input type="file" accept="image/*" @change="handleFileChange" />
+        <v-col cols="12">
+          <v-btn block outlined color="blue" @click="writeClick"> 등록 </v-btn>
+        </v-col>
       </v-row>
     </v-container>
   </v-form>

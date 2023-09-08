@@ -9,7 +9,7 @@
     </v-row>
     <v-row>
       <v-col cols="12">
-        <v-img v-if="imageUrl" :src="imageUrl" class="mb-4" max-width="100%"></v-img>
+        <v-img v-if="imageUrl" :src="imageUrl" class="detail-image mb-4"></v-img>
       </v-col>
     </v-row>
     <v-row>
@@ -83,20 +83,15 @@ export default {
     // 글 좋아요 상태 변경 시 호출되는 메서드
     async tipPostLike() {
       try {
+        console.log("좋아요")
         const id = this.$route.params.id;
         const response = await axios.post(`/tips/${id}/likes`);
-        if (response.data.msg === "성공") {
-          // 서버 응답을 기다린 후 상태 업데이트
-          this.setLike({postId: id, liked: !this.likes[id]});
-          // 상태 업데이트가 완료되면 좋아요 수와 버튼 텍스트를 업데이트
-          this.likeCount = response.data.likeCount;
-          this.liked = !this.liked;
-
-        } else {
-          alert(response.data.msg);
-        }
+        this.setLike({postId: id, liked: !this.likes[id]});
+        // 상태 업데이트가 완료되면 좋아요 수와 버튼 텍스트를 업데이트
+        this.likeCount = response.data.likeCount;
+        this.liked = !this.liked;
+        // eslint-disable-next-line no-empty
       } catch (error) {
-        alert('좋아요 중 오류가 발생했습니다. 다시 시도해 주세요.');
       }
       await this.fetchTipDetail();
     },
@@ -189,5 +184,11 @@ export default {
 
 .v-icon {
   margin-right: 4px;
+}
+.detail-image {
+  width: 300px;
+  height: 300px;
+  object-fit: cover; /* 이미지 비율을 유지하면서 지정된 크기에 맞추기 위해 */
+  margin: 0 auto; /* 이미지를 중앙에 배치하기 위해 */
 }
 </style>

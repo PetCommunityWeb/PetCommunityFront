@@ -11,8 +11,8 @@
         {{ tip.user ? tip.user.username : 'Unknown' }}
       </template>
     </v-data-table>
-    <v-row>
-      <v-btn outlined color="blue" @click="writeClick" > 글쓰기 </v-btn>
+    <v-row class="mt-3">
+      <v-btn outlined color="blue" @click="writeClick"> 글쓰기 </v-btn>
     </v-row>
   </v-container>
 
@@ -34,15 +34,7 @@ export default {
   methods: {
     async fetchTips() {
       try {
-        // this.requestBody = {
-        //   title: this.title,
-        //   username: this.username,
-        //   likeCount: this.likeCount,
-        //   page: this.page
-        // };
-
         const response = await axios.get("/tips");
-        console.log(response)
         this.tips = response.data.map(item => ({ ...item, username: item.username }));
       } catch (error) {
         console.error("Error fetching tips:", error);
