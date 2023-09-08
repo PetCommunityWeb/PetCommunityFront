@@ -115,8 +115,8 @@ export default {
         } else {
           alert('작성자만 수정할 수 있습니다.');
         }
+        // eslint-disable-next-line no-empty
       } catch (error) {
-        console.error("Error checking tip author:", error);
       }
     },
 
@@ -133,8 +133,8 @@ export default {
           } else {
             alert(response.data.msg);
           }
+          // eslint-disable-next-line no-empty
         } catch (error) {
-          alert('글 삭제 중 오류가 발생했습니다. 다시 시도해 주세요.');
         }
       }
     },
