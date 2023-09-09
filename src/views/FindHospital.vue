@@ -1,6 +1,12 @@
 <template>
     <div class="map-container">
         <h1 style="margin:15px 0 15px 0;">병원 찾기</h1>
+        <div class="filter-container">
+            <v-select v-model="selectedSubject" :items="subjectEnums" label="진료 과목"></v-select>
+            <v-select v-model="selectedSpecies" :items="speciesEnums" label="동물 종류"></v-select>
+            <v-select v-model="selectedDay" :items="days" item-text="label" item-value="value" label="진료 요일"></v-select>
+            <v-btn @click="fetchHospitalData">조회하기</v-btn>
+        </div>
         <div class="content-wrapper">
             <div id="kakao-map"></div>
             <div class="hospital-list">
@@ -19,7 +25,8 @@
                     <v-card-text>
                         전화번호: {{ hospital.phoneNumber }}<br>
                         진료과목: {{ hospital.subjectEnums.join(', ') }}<br>
-                        진료동물: {{ hospital.speciesEnums.join(', ') }}
+                        진료동물: {{ hospital.speciesEnums.join(', ') }}<br>
+                        운영 요일: {{ formatOperatingDays(hospital.operatingDays) }}<br>
                     </v-card-text>
                     <v-card-actions>
                         <v-btn color="primary" text :to="`/hospital/${hospital.id}`">자세히</v-btn>
@@ -38,9 +45,25 @@ export default {
     name: "FindHospital",
     data() {
         return {
+            speciesEnums: ["없음","강아지", "고양이", "기타"], // 예시
+            subjectEnums: ["없음","내과", "외과", "정형외과"],   // 예시
+            days: [
+                { label: "없음", value: null },
+                { label: "월요일", value: "MONDAY" },
+                { label: "화요일", value: "TUESDAY" },
+                { label: "수요일", value: "WEDNESDAY" },
+                { label: "목요일", value: "THURSDAY" },
+                { label: "금요일", value: "FRIDAY" },
+                { label: "토요일", value: "SATURDAY" },
+                { label: "일요일", value: "SUNDAY" },
+            ],
+            selectedSpecies: null,
+            selectedSubject: null,
+            selectedDay: null,
             hospitals: [],
             visibleHospitals: [],  // 화면에 표시될 병원들의 배열
-            map: null
+            map: null,
+            markers: [],  // 이 배열은 지도에 추가된 모든 마커를 추적합니다.
         };
     },
     mounted() {
@@ -54,6 +77,18 @@ export default {
         document.removeEventListener('routeToHospital', this.handleRouteEvent);
     },
     methods: {
+        formatOperatingDays(days) {
+            const koreanDays = {
+                MONDAY: '월요일',
+                TUESDAY: '화요일',
+                WEDNESDAY: '수요일',
+                THURSDAY: '목요일',
+                FRIDAY: '금요일',
+                SATURDAY: '토요일',
+                SUNDAY: '일요일'
+            };
+            return days.map(day => koreanDays[day]).join(', ');
+        },
         averageRating(hospital) {
             if (hospital.reviews && hospital.reviews.length > 0) {
                 const totalRating = hospital.reviews.reduce((sum, review) => sum + review.rate, 0);
@@ -80,10 +115,26 @@ export default {
             });
         },
         fetchHospitalData() {
-            axios.get("/hospitals")
+            const params = {};
+
+            // 선택된 필터에 따라 쿼리 파라미터 설정
+            if (this.selectedSpecies && this.selectedSpecies !== "없음") {
+                params.species = this.selectedSpecies;
+            }
+            if (this.selectedSubject && this.selectedSubject !== "없음") {
+                params.subject = this.selectedSubject;
+            }
+            if (this.selectedDay && this.selectedDay !== "없음") {
+                params.operatingDay = this.selectedDay;
+            }
+
+            console.log(params)
+            axios.get("/hospitals", {params: params})
                 .then(response => {
                     this.hospitals = response.data;
+                    console.log(this.hospitals)
                     this.addMarkers();
+                    this.updateVisibleHospitals();
                 })
                 .catch(error => {
                     console.error("Failed to fetch hospital data:", error);
@@ -112,13 +163,17 @@ export default {
             }
         },
         addMarkers() {
+            this.markers.forEach(marker => {
+                marker.setMap(null);
+            });
+            this.markers = [];  // 마커 배열을 초기화합니다.
             this.hospitals.forEach(hospital => {
                 const markerPosition = new window.kakao.maps.LatLng(hospital.latitude, hospital.longitude);
                 const marker = new window.kakao.maps.Marker({
                     position: markerPosition
                 });
                 marker.setMap(this.map);
-
+                this.markers.push(marker);
                 // CustomOverlay에 표시될 내용을 설정합니다.
                 const overlayContent = `
               <div class="custom-overlay">
@@ -201,5 +256,12 @@ window.routeToHospitalDetail = function (event) {
     height: auto;
     max-height: 100px; /* 원하는 높이로 설정할 수 있습니다. */
     object-fit: cover; /* 이미지가 카드 크기에 맞게 조절됩니다. */
+}
+
+.filter-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
 }
 </style>
