@@ -1,0 +1,31 @@
+.feed-list {
+    margin: 20px 0;
+}
+
+.feed-item {
+    margin-bottom: 20px;
+    padding: 10px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+}
+
+.feed-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+}
+
+.detailed-image {
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.comment-item {
+    padding: 10px 0;
+}
+
+.comment-item > .v-list-item__title > .v-icon {
+    color: #777;
+}
+.sort-select {
+    width: 150px; /* 원하는 크기에 맞게 조절 */
+}
