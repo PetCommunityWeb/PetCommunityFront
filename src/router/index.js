@@ -20,6 +20,7 @@ import TipCreate from "@/components/TipCreate.vue";
 import TipEdit from "@/components/TipEdit.vue";
 import IntroPage from "@/views/IntroPage.vue";
 import RestoreProfile from "@/components/RestoreProfile.vue";
+import OAuth2 from "@/views/OAuth2.vue";
 
 Vue.use(Router);
 Vue.use(Vuex)
@@ -28,6 +29,11 @@ const routes = [
         path: '/',
         name: 'Home',
         component: IntroPage // 홈페이지 컴포넌트를 연결
+    },
+    {
+        path: '/oauth2',
+        name: 'oauth2',
+        component: OAuth2
     },
     {
         path: '/find-hospital',
