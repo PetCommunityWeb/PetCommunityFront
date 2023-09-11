@@ -9,13 +9,13 @@
       <!-- 조회 순서 선택 드롭다운 -->
       <v-col cols="auto" class="ml-auto">
         <v-select
-            :items="['날짜순', '좋아요순']"
-            label="정렬"
-            v-model="sortOrder"
-            dense
-            outlined
-            class="sort-select"
-            @change="changeSortOrder"
+          :items="['날짜순', '좋아요순', '댓글순']"
+          label="정렬"
+          v-model="sortOrder"
+          dense
+          outlined
+          class="sort-select"
+          @change="changeSortOrder"
         ></v-select>
       </v-col>
     </v-row>
