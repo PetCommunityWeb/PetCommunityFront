@@ -22,6 +22,7 @@
 import axios from "@/axios/axios-instance";
 // import AWS from 'aws-sdk';
 import {mapState} from "vuex";
+import {checkAuthAndAlert} from "@/methods/authChecker";
 
 export default {
   name:'TipBoard',
@@ -41,6 +42,9 @@ export default {
       }
     },
     writeClick() {
+        if (!checkAuthAndAlert()) {
+            return;
+        }
       this.$router.push('/community/tip/create');
     },
     rowClick(tip) {
