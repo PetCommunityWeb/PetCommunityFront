@@ -10,6 +10,7 @@ export default {
   mounted() {
     // 쿠키에서 Authorization 값을 읽습니다.
     const authorizationToken = Cookies.get('Authorization');
+    console.log(authorizationToken)
     // 해당 값이 존재하면 localStorage에 저장합니다.
     if (authorizationToken) {
       localStorage.setItem('accessToken', authorizationToken);
