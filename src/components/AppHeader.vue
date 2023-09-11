@@ -8,7 +8,7 @@
         <NotificationIcon v-if="isLoggedIn" class="ml-16"></NotificationIcon>
 
         <v-spacer></v-spacer>
-        <div>
+        <div class="menu-button">
             <v-btn text to="/find-hospital" class="custom-button">
                 <v-icon left>mdi-map-search</v-icon>
                 병원 찾기
@@ -59,6 +59,16 @@ export default {
 };
 </script>
 <style scoped>
+@font-face {
+    font-family: 'a꼬마물고기'; /* 원하는 폰트 이름 */
+    src: url('/src/views/fonts/a꼬마물고기.ttf') format('truetype'); /* 폰트 파일 경로 및 포맷 */
+    /* 다른 포맷에 따라 format 속성 변경 가능 */
+    font-weight: 400; /* 폰트 두께 설정 */
+    font-style: normal; /* 폰트 스타일 설정 (normal, italic 등) */
+}
+.menu-button{
+    font-family: "a꼬마물고기";
+}
 .toolbar-title-link {
     text-decoration: none; /* 밑줄 제거 */
     color: white; /* 텍스트 색상 */

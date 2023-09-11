@@ -3,11 +3,11 @@
     <div class="intro">
         <!-- IntroPage 내용 -->
         <div class="intro-content">
-            <h1 class='text-center'>나의 반려동물을 위한 Pet 병 </h1>
-            <p></p>
-            <p class='text-center' style="font">동물 병원 예약, 반려동물 관련 팁, 내 반려동물 자랑 등 다양한 활동을 해보세요!</p>
+            <h1>나의 반려동물을 위한 Pet 병<span>
+                동물 병원 예약, 반려동물 관련 팁, 내 반려동물 자랑 등 다양한 활동을 해보세요!</span></h1>
         </div>
-        <div class="text-center">
+
+        <div class="header">
             <router-link to="/hospitals" class="btn btn-primary">
                 <v-icon left>mdi-map-search</v-icon>
                 병원 찾기
@@ -52,6 +52,15 @@ export default {
 </script>
 
 <style scoped>
+
+@font-face {
+    font-family: '제목폰트'; /* 원하는 폰트 이름 */
+    src: url('/src/views/fonts/a시월구일3.ttf') format('truetype'); /* 폰트 파일 경로 및 포맷 */
+    /* 다른 포맷에 따라 format 속성 변경 가능 */
+    font-weight: 400; /* 폰트 두께 설정 */
+    font-style: normal; /* 폰트 스타일 설정 (normal, italic 등) */
+}
+
 /* 대문 페이지의 스타일을 디자인합니다. */
 .intro {
     /*display: flex;*/
@@ -91,7 +100,7 @@ footer {
     margin: 0 auto;
 }
 
-.text-center {
+.header {
     text-align: center;
 }
 
@@ -133,4 +142,39 @@ footer {
     max-width: 800px; /* 슬라이더의 최대 너비를 설정하세요 */
 }
 
+.intro-content h1 {
+    text-align: center;
+    font-size: 30px;
+    text-transform: uppercase;
+    color: #222;
+    letter-spacing: 1px;
+    font-family: "제목폰트", serif;
+    font-weight: 400;
+}
+
+.intro-content h1 span {
+    margin-top: 5px;
+    font-size: 20px;
+    color: #444;
+    word-spacing: 1px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    font-family: "a타이틀고딕2", sans-serif;
+    font-weight: 500;
+
+    display: grid;
+    grid-template-columns: 1fr max-content 1fr;
+    grid-template-rows: 27px 0;
+    grid-gap: 20px;
+    align-items: center;
+}
+
+.intro-content h1 span:after, .intro-content h1 span:before {
+    content: " ";
+    display: block;
+    border-bottom: 1px solid #ccc;
+    border-top: 1px solid #ccc;
+    height: 5px;
+    background-color: #f8f8f8;
+}
 </style>
