@@ -6,18 +6,24 @@
 import Cookies from 'js-cookie';
 
 export default {
-  name: "OAuth2.vue",
-  mounted() {
-    // 쿠키에서 Authorization 값을 읽습니다.
-    const authorizationToken = Cookies.get('Authorization');
-    console.log(authorizationToken)
-    // 해당 값이 존재하면 localStorage에 저장합니다.
-    if (authorizationToken) {
-      localStorage.setItem('accessToken', authorizationToken);
-      Cookies.remove('Authorization')
-      window.location.href = '/'
+    name: "OAuth2.vue",
+    mounted() {
+        // URL에서 토큰 값을 추출합니다.
+        const urlParams = new URLSearchParams(window.location.search);
+        const accessToken = urlParams.get('accessToken');
+        const refreshToken = urlParams.get('refreshToken');
+        console.log("AccessToken:", accessToken);
+        console.log("RefreshToken:", refreshToken);
+        // 해당 값이 존재하면 localStorage에 저장합니다.
+        if (accessToken) {
+            localStorage.setItem('accessToken', accessToken);
+        }
+        if (refreshToken) {
+            Cookies.set("refreshToken", refreshToken, {expires: 7}); // expires: 유지 시간 (일 단위)
+        }
+        // 토큰을 저장한 후 메인 페이지로 리다이렉트합니다.
+        window.location.href = '/';
     }
-  }
 }
 </script>
 
