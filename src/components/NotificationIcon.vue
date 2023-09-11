@@ -6,6 +6,10 @@
     <span v-if="unreadCount" class="unread-badge">{{ unreadCount }}</span>
     <!-- Dropdown menu for notifications -->
     <div v-if="showNotifications" class="notifications-dropdown">
+      <v-alert v-if="notifications.length === 0" type="info" outlined>
+        새로운 알림이 없습니다
+      </v-alert>
+
       <div v-for="notification in notifications" :key="notification.id" class="notification-item" :class="{ 'read': notification.read }">
         {{ notification.username }} 님 {{ notification.date }}일 {{ notification.startTime | formatTime }}에 {{ notification.hospitalName }} 예약 알려드립니다.
 
@@ -131,5 +135,10 @@ export default {
 .notification-item div {
   display: inline-block;
   margin-left: 10px;
+}
+.notifications-dropdown > .v-alert {
+  margin: 0; /* 기본 마진 제거 */
+  border-radius: 0; /* 모서리 둥글게 하는 스타일 제거 */
+  box-shadow: none; /* 기본 그림자 제거 */
 }
 </style>

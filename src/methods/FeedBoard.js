@@ -87,11 +87,21 @@ export default {
             } catch (error) {
             }
         },
+        async fetchFeedsByComments() {
+            try {
+                const response = await axios.get('/feeds/comment');
+                this.feeds = response.data;
+                // eslint-disable-next-line no-empty
+            } catch (error) {
+            }
+        },
         changeSortOrder() {
             if (this.sortOrder === '날짜순') {
                 this.fetchFeeds();
             } else if (this.sortOrder === '좋아요순') {
                 this.fetchFeedsByLikes();
+            } else if (this.sortOrder === '댓글순') {
+                this.fetchFeedsByComments();
             }
         },
         // 상세 피드 불러오기
