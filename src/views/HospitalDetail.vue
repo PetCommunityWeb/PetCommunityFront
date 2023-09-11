@@ -1,153 +1,168 @@
 <template>
-  <div class="hospital-detail"> <!-- fill-height 추가 -->
-    <v-row no-gutters class="fill-height">
-      <v-col cols="6" class="d-flex justify-center align-center"> <!-- d-flex 추가 -->
-        <v-card cols="6">
-          <v-img :src="hospital.imageUrl" alt="Hospital Image" height="300" width="500"></v-img>
-          <v-card-title>{{ hospital.name }}</v-card-title>
-          <v-card-subtitle>{{ hospital.address }}</v-card-subtitle>
-          <v-card-text>
-            <p>{{ hospital.introduction }}</p>
-            <p><strong>전화번호:</strong> {{ hospital.phoneNumber }}</p>
-          </v-card-text>
-          <div class="rating-container">
-            <v-icon color="yellow" v-for="n in parseInt(averageRating(hospital))" :key="`full-${hospital.id}-${n}`">mdi-star</v-icon>
-            <v-icon color="yellow" v-if="averageRating(hospital) % 1 >= 0.5" :key="`half-${hospital.id}`">mdi-star-half</v-icon>
-          </div>
-          <v-chip-group column>
-            <v-chip v-for="day in getKoreanDays(hospital.operatingDays)" :key="day" small>{{ day }}</v-chip>
-          </v-chip-group>
-          <v-card-actions>
-            <v-chip v-for="species in hospital.speciesEnums" :key="species" small>{{ species }}</v-chip>
-            <v-chip v-for="subject in hospital.subjectEnums" :key="subject" small outlined>{{ subject }}</v-chip>
-          </v-card-actions>
-          <v-card-actions v-if="isOwner">
-            <v-btn @click="openAppointmentModal">병원 관리</v-btn>
-          </v-card-actions>
-        </v-card>
-      </v-col>
-      <v-col cols="12"> <!-- d-flex 추가 -->
-        <v-card class="border-box fill-height"> <!-- Additional container v-card -->
-
-          <v-row class="fill-height">
-            <!-- Date Picker Card -->
-            <v-col cols="6"> <!-- d-flex 추가 -->
-              <v-card class="border-box fill-height">
-                <v-date-picker width="100%" v-model="selectedDate" @input="fetchAvailableTimes"></v-date-picker>
-              </v-card>
+    <div class="hospital-detail"> <!-- fill-height 추가 -->
+        <v-row no-gutters class="fill-height">
+            <v-col cols="6" class="d-flex justify-center align-center"> <!-- d-flex 추가 -->
+                <v-card cols="6">
+                    <v-img :src="hospital.imageUrl" alt="Hospital Image" height="300" width="500"></v-img>
+                    <v-card-title>{{ hospital.name }}</v-card-title>
+                    <v-card-subtitle>{{ hospital.address }}</v-card-subtitle>
+                    <v-card-text>
+                        <p>{{ hospital.introduction }}</p>
+                        <p><strong>전화번호:</strong> {{ hospital.phoneNumber }}</p>
+                    </v-card-text>
+                    <div class="rating-container">
+                        <v-icon color="yellow" v-for="n in parseInt(averageRating(hospital))"
+                                :key="`full-${hospital.id}-${n}`">mdi-star
+                        </v-icon>
+                        <v-icon color="yellow" v-if="averageRating(hospital) % 1 >= 0.5" :key="`half-${hospital.id}`">
+                            mdi-star-half
+                        </v-icon>
+                    </div>
+                    <v-chip-group column>
+                        <v-chip v-for="day in getKoreanDays(hospital.operatingDays)" :key="day" small>{{ day }}</v-chip>
+                    </v-chip-group>
+                    <v-card-actions>
+                        <v-chip v-for="species in hospital.speciesEnums" :key="species" small>{{ species }}</v-chip>
+                        <v-chip v-for="subject in hospital.subjectEnums" :key="subject" small outlined>{{
+                                subject
+                            }}
+                        </v-chip>
+                    </v-card-actions>
+                    <v-card-actions v-if="isOwner">
+                        <v-btn @click="openAppointmentModal">병원 관리</v-btn>
+                    </v-card-actions>
+                </v-card>
             </v-col>
+            <v-col cols="12"> <!-- d-flex 추가 -->
+                <v-card class="border-box fill-height"> <!-- Additional container v-card -->
 
-            <!-- Appointment Slots Card -->
-            <v-col cols="6">
-              <v-card class="flex-container">
-                  <div class="flex-child slot-list-container">
-                    <v-list>
-                      <v-list-item-group v-if="availableSlots.length">
-                        <v-list-item v-for="slot in availableSlots" :key="slot.slotId">
-                          <v-list-item-content>
-                            <v-list-item-title>{{ slot.startTime }}</v-list-item-title>
-                            <v-list-item-subtitle v-if="slot.reserved">이미 예약됨</v-list-item-subtitle>
-                          </v-list-item-content>
-                          <v-list-item-action v-if="!isOwner && !slot.reserved">
-                            <v-btn @click="reservate(slot)">예약하기</v-btn>
-                          </v-list-item-action>
-                        </v-list-item>
-                      </v-list-item-group>
-                    </v-list>
-                  <v-row class="mt-4" v-if="isOwner">
-                    <v-col>
-                      <v-select v-model="selectedHour" :items="hours" label="시간 선택"></v-select>
-                    </v-col>
-                    <v-col>
-                      <v-select v-model="selectedMinute" :items="minutes" label="분 선택"></v-select>
-                    </v-col>
-                    <v-col>
-                      <v-btn @click="addAppointmentSlot">저장</v-btn>
-                    </v-col>
-                  </v-row>
-                </div>
-              </v-card>
+                    <v-row class="fill-height">
+                        <!-- Date Picker Card -->
+                        <v-col cols="6"> <!-- d-flex 추가 -->
+                            <v-card class="border-box fill-height">
+                                <v-date-picker width="100%" v-model="selectedDate"
+                                               @input="fetchAvailableTimes"></v-date-picker>
+                            </v-card>
+                        </v-col>
+
+                        <!-- Appointment Slots Card -->
+                        <v-col cols="6">
+                            <v-card class="flex-container">
+                                <div class="flex-child slot-list-container">
+                                    <v-list>
+                                        <v-list-item-group v-if="availableSlots.length">
+                                            <v-list-item v-for="slot in availableSlots" :key="slot.slotId">
+                                                <v-list-item-content>
+                                                    <v-list-item-title>{{ slot.startTime }}</v-list-item-title>
+                                                    <v-list-item-subtitle v-if="slot.reserved">이미 예약됨
+                                                    </v-list-item-subtitle>
+                                                </v-list-item-content>
+                                                <v-list-item-action v-if="!isOwner && !slot.reserved && role">
+                                                    <v-btn @click="reservate(slot)">예약하기</v-btn>
+                                                </v-list-item-action>
+                                            </v-list-item>
+                                        </v-list-item-group>
+                                    </v-list>
+                                    <v-row class="mt-4" v-if="isOwner">
+                                        <v-col>
+                                            <v-select v-model="selectedHour" :items="hours" label="시간 선택"></v-select>
+                                        </v-col>
+                                        <v-col>
+                                            <v-select v-model="selectedMinute" :items="minutes" label="분 선택"></v-select>
+                                        </v-col>
+                                        <v-col>
+                                            <v-btn @click="addAppointmentSlot">저장</v-btn>
+                                        </v-col>
+                                    </v-row>
+                                </div>
+                            </v-card>
+                        </v-col>
+                    </v-row>
+                </v-card>
+                <v-col cols="12">
+                    <v-card>
+                        <v-card-title>리뷰 목록</v-card-title>
+                        <v-divider></v-divider>
+                        <v-list v-if="hospital.reviews && hospital.reviews.length">
+                            <v-list-item-group>
+                                <v-list-item v-for="review in hospital.reviews" :key="review.id">
+                                    <v-list-item-avatar>
+                                        <v-img :src="review.imageUrl" alt="Review Image"></v-img>
+                                    </v-list-item-avatar>
+                                    <v-list-item-content>
+                                        <v-list-item-title>{{ review.title }}</v-list-item-title>
+                                        <v-list-item-subtitle>{{ review.content }}</v-list-item-subtitle>
+                                        <v-list-item-subtitle class="mb-2">작성자 : {{
+                                                review.nickname
+                                            }}
+                                        </v-list-item-subtitle>
+                                    </v-list-item-content>
+                                    <v-list-item-action>
+                                        <v-rating v-model="review.rate" readonly></v-rating>
+                                    </v-list-item-action>
+                                </v-list-item>
+                            </v-list-item-group>
+                        </v-list>
+                        <v-card-text v-else>아직 리뷰가 없습니다.</v-card-text>
+                    </v-card>
+                </v-col>
+
             </v-col>
-          </v-row>
-        </v-card>
-        <v-col cols="12">
-          <v-card>
-            <v-card-title>리뷰 목록</v-card-title>
-            <v-divider></v-divider>
-            <v-list v-if="hospital.reviews && hospital.reviews.length">
-              <v-list-item-group>
-                <v-list-item v-for="review in hospital.reviews" :key="review.id">
-                  <v-list-item-avatar>
-                    <v-img :src="review.imageUrl" alt="Review Image"></v-img>
-                  </v-list-item-avatar>
-                  <v-list-item-content>
-                    <v-list-item-title>{{ review.title }}</v-list-item-title>
-                    <v-list-item-subtitle>{{ review.content }}</v-list-item-subtitle>
-                    <v-list-item-subtitle class="mb-2">작성자 : {{ review.nickname }}</v-list-item-subtitle>
-                  </v-list-item-content>
-                  <v-list-item-action>
-                    <v-rating v-model="review.rate" readonly></v-rating>
-                  </v-list-item-action>
-                </v-list-item>
-              </v-list-item-group>
-            </v-list>
-            <v-card-text v-else>아직 리뷰가 없습니다.</v-card-text>
-          </v-card>
-        </v-col>
+        </v-row>
 
-      </v-col>
-    </v-row>
-
-    <v-dialog v-model="appointmentDialog" max-width="400px">
-      <v-card>
-        <v-card-title>병원 관리</v-card-title>
-        <v-card-actions>
-          <v-btn @click="openEditHospital">병원 수정</v-btn>
-          <v-btn @click="deleteHospital">병원 삭제</v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
-    <v-dialog v-model="editHospitalDialog" max-width="600px">
-      <v-card>
-        <v-card-title>병원 정보 수정</v-card-title>
-        <v-card-text>
-          <v-text-field label="병원 이름" v-model="editHospitalData.name"></v-text-field>
-          <v-text-field label="소개" v-model="editHospitalData.introduction" multiline></v-text-field>
-          <v-file-input label="이미지 선택" @change="handleFileChange" accept="image/*"></v-file-input>
-          <img :src="editHospitalData.imageUrl" v-if="editHospitalData.imageUrl" alt="Selected Image" width="100%" />
-          <v-col cols="12">
-            <v-text-field type="text" v-model="editHospitalData.address" label="주소를 검색해주세요" readonly />
-            <button @click="openKakaoAddressSearch" style="border: 1px solid rgb(128,128,128);">주소 검색</button>
-          </v-col>
-<!--          <v-text-field label="병원 주소" v-model="editHospitalData.address"></v-text-field>-->
-          <v-text-field label="전화번호" v-model="editHospitalData.phoneNumber"></v-text-field>
-          <v-select
-              v-model="editHospitalData.speciesEnums"
-              :items="speciesEnums"
-              label="동물 종류"
-              multiple
-          ></v-select>
-          <v-select
-              v-model="editHospitalData.subjectEnums"
-              :items="subjectEnums"
-              label="전문 분야"
-              multiple
-          ></v-select>
-          <v-col cols="12">
-            <v-row>
-              <v-col v-for="day in days" :key="day.value" cols="12" sm="4">
-                <v-checkbox v-model="editHospitalData.operatingDays" :label="day.text" :value="day.value"></v-checkbox>
-              </v-col>
-            </v-row>
-          </v-col>
-        </v-card-text>
-        <v-card-actions>
-          <v-btn @click="updateHospital">저장</v-btn>
-          <v-btn @click="editHospitalDialog = false">취소</v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
-  </div>
+        <v-dialog v-model="appointmentDialog" max-width="400px">
+            <v-card>
+                <v-card-title>병원 관리</v-card-title>
+                <v-card-actions>
+                    <v-btn @click="openEditHospital">병원 수정</v-btn>
+                    <v-btn @click="deleteHospital">병원 삭제</v-btn>
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
+        <v-dialog v-model="editHospitalDialog" max-width="600px">
+            <v-card>
+                <v-card-title>병원 정보 수정</v-card-title>
+                <v-card-text>
+                    <v-text-field label="병원 이름" v-model="editHospitalData.name"></v-text-field>
+                    <v-text-field label="소개" v-model="editHospitalData.introduction" multiline></v-text-field>
+                    <v-file-input label="이미지 선택" @change="handleFileChange" accept="image/*"></v-file-input>
+                    <img :src="editHospitalData.imageUrl" v-if="editHospitalData.imageUrl" alt="Selected Image"
+                         width="100%"/>
+                    <v-col cols="12">
+                        <v-text-field type="text" v-model="editHospitalData.address" label="주소를 검색해주세요" readonly/>
+                        <button @click="openKakaoAddressSearch" style="border: 1px solid rgb(128,128,128);">주소 검색
+                        </button>
+                    </v-col>
+                    <!--          <v-text-field label="병원 주소" v-model="editHospitalData.address"></v-text-field>-->
+                    <v-text-field label="전화번호" v-model="editHospitalData.phoneNumber"></v-text-field>
+                    <v-select
+                        v-model="editHospitalData.speciesEnums"
+                        :items="speciesEnums"
+                        label="동물 종류"
+                        multiple
+                    ></v-select>
+                    <v-select
+                        v-model="editHospitalData.subjectEnums"
+                        :items="subjectEnums"
+                        label="전문 분야"
+                        multiple
+                    ></v-select>
+                    <v-col cols="12">
+                        <v-row>
+                            <v-col v-for="day in days" :key="day.value" cols="12" sm="4">
+                                <v-checkbox v-model="editHospitalData.operatingDays" :label="day.text"
+                                            :value="day.value"></v-checkbox>
+                            </v-col>
+                        </v-row>
+                    </v-col>
+                </v-card-text>
+                <v-card-actions>
+                    <v-btn @click="updateHospital">저장</v-btn>
+                    <v-btn @click="editHospitalDialog = false">취소</v-btn>
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
+    </div>
 </template>
 
 <script>
@@ -156,231 +171,231 @@ import {mapState} from "vuex";
 import hospitalMixin from "@/mixins/hospitalMixin";
 
 export default {
-  name: "HospitalDetail",
-  mixins: [hospitalMixin],
-  data() {
-    return {
-      days: [  // 요일 정보
-        { text: '월요일', value: 'MONDAY' },
-        { text: '화요일', value: 'TUESDAY' },
-        { text: '수요일', value: 'WEDNESDAY' },
-        { text: '목요일', value: 'THURSDAY' },
-        { text: '금요일', value: 'FRIDAY' },
-        { text: '토요일', value: 'SATURDAY' },
-        { text: '일요일', value: 'SUNDAY' },
-      ],
-      hospital: {},
-      editHospitalData: {},
-      isOwner: false,
-      appointmentDialog: false,
-      editHospitalDialog: false,
-      selectedHour: null,       // 선택된 시간을 저장
-      selectedMinute: null,
-      isTimePickerOpen: false,
-      selectedDate: null,
-      isBookingManagerOpen: false, // 예약관리 UI를 토글하기 위한 변수
-      availableSlots: [], // 해당 날짜에 대한 사용 가능한 예약 시간을 저장하기 위한 배열
-      hours: Array.from({length: 24}, (_, i) => i.toString()),
-      minutes: ['0', '10', '20', '30', '40', '50'],
-      speciesEnums: ['강아지', '고양이', '기타'],  // 예시입니다. 실제 값을 기입해주세요.
-      subjectEnums: ['내과', '외과', '정형외과'],
-    };
-  },
-  mounted() {
-    this.created()
-  },
-  computed: {
-    ...mapState(["email", "role"])
-  },
-  watch: {
-    hospital(newVal) {
-      console.log(newVal.ownerEmail)
-      console.log(this.email)
-
-      if (this.role === "OWNER" && newVal.ownerEmail && newVal.ownerEmail === this.email) {
-        this.isOwner = true;
-      }
-      this.editHospitalData = {...newVal};
-    }
-  },
-  methods: {
-    getKoreanDays(englishDays) {
-      return englishDays.map(englishDay => {
-        const matchingDay = this.days.find(day => day.value === englishDay);
-        return matchingDay ? matchingDay.text : englishDay;
-      });
-    },
-    averageRating(hospital) {
-      if (hospital.reviews && hospital.reviews.length > 0) {
-        const totalRating = hospital.reviews.reduce((sum, review) => sum + review.rate, 0);
-        return parseFloat((totalRating / hospital.reviews.length).toFixed(1));
-      }
-      return 0;
-    },
-    handleFileChange(file) {
-      if (file) {
-        // 이미지 파일 객체를 저장
-        this.editHospitalData.imageFile = file;
-        // 이미지 파일을 URL로 변환하여 미리보기를 생성
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          this.editHospitalData.imageUrl = e.target.result;
+    name: "HospitalDetail",
+    mixins: [hospitalMixin],
+    data() {
+        return {
+            days: [  // 요일 정보
+                {text: '월요일', value: 'MONDAY'},
+                {text: '화요일', value: 'TUESDAY'},
+                {text: '수요일', value: 'WEDNESDAY'},
+                {text: '목요일', value: 'THURSDAY'},
+                {text: '금요일', value: 'FRIDAY'},
+                {text: '토요일', value: 'SATURDAY'},
+                {text: '일요일', value: 'SUNDAY'},
+            ],
+            hospital: {},
+            editHospitalData: {},
+            isOwner: false,
+            appointmentDialog: false,
+            editHospitalDialog: false,
+            selectedHour: null,       // 선택된 시간을 저장
+            selectedMinute: null,
+            isTimePickerOpen: false,
+            selectedDate: null,
+            isBookingManagerOpen: false, // 예약관리 UI를 토글하기 위한 변수
+            availableSlots: [], // 해당 날짜에 대한 사용 가능한 예약 시간을 저장하기 위한 배열
+            hours: Array.from({length: 24}, (_, i) => i.toString()),
+            minutes: ['0', '10', '20', '30', '40', '50'],
+            speciesEnums: ['강아지', '고양이', '기타'],  // 예시입니다. 실제 값을 기입해주세요.
+            subjectEnums: ['내과', '외과', '정형외과'],
         };
-        reader.readAsDataURL(file);
-      }
     },
-    async reservate(slot) {
-      console.log(slot)
-      const requestData = {
-        hospitalId: slot.hospitalId,
-        date: slot.date,
-        startTime: slot.startTime
-      };
-      console.log(requestData)
-      slot.reserved = true;
-      try {
-        await axios.post('/reservations', requestData)
-        // eslint-disable-next-line no-empty
-      } catch (error) {
-      }
+    mounted() {
+        this.created()
     },
-    async fetchAvailableTimes() {
-      try {
-        const response = await axios.get('/reservation-slot', {
-          params: {
-            hospitalId: this.hospital.id,
-            date: this.selectedDate
-          }
-        });
-        this.availableSlots = response.data;
-        // eslint-disable-next-line no-empty
-      } catch (error) {
-      }
+    computed: {
+        ...mapState(["email", "role"])
     },
-    openEditHospital() {
-      this.appointmentDialog = false;
-      this.editHospitalDialog = true;
-    },
-    async updateHospital() {
-      if (this.editHospitalData.imageFile) {
-        const uploadedImageUrl = await this.uploadImageToS3(this.editHospitalData.imageFile);
-        if (uploadedImageUrl) {
-          this.editHospitalData.imageUrl = uploadedImageUrl;
-        }
-      }
-      try {
-        const response = await axios.put(`/hospitals/${this.hospital.id}`, this.editHospitalData);
-        if (response.data.statusCode === 400) {
-          alert(response.data.msg);
-          this.editHospitalDialog = false;
-        }
-        else {
-          this.hospital = {...this.editHospitalData};
-          this.editHospitalDialog = false;
-        }
-        // 성공 알림 또는 리프레시 로직 추가
-        // eslint-disable-next-line no-empty
-      } catch (error) {
-      }
-    },
-    async deleteHospital() {
-      try {
-        const response = await axios.delete(`/hospitals/${this.hospital.id}`);
-        if (response.data.statusCode === 400) {
-          alert(response.data.msg);
-        }
-        // 성공 후 리디렉션 또는 알림 표시
-        await this.$router.push("/")
-      } catch (error) {
-        console.error("Failed to delete hospital:", error);
-      }
-    },
-    async created() {
-      const hospitalId = this.$route.params.id;
-      try {
-        const response = await axios.get(`/hospitals/${hospitalId}`);
-        this.hospital = response.data;
-        console.log(this.hospital)
-        // eslint-disable-next-line no-empty
-      } catch (error) {
-      }
-    },
-    openAppointmentModal() {
-      this.appointmentDialog = true;
-    },
-    async addAppointmentSlot() {
-      if (!this.selectedHour || !this.selectedMinute) {
-        alert("시간과 분을 모두 선택해주세요.");
-        return;
-      }
-      // 선택된 시간과 분으로 LocalTime 객체를 만듭니다.
-      const paddedHour = String(this.selectedHour).padStart(2, '0');
-      const paddedMinute = String(this.selectedMinute).padStart(2, '0');
-      const startTime = `${paddedHour}:${paddedMinute}`;      // 백엔드에 POST 요청을 보낼 데이터를 구성합니다.
-      const requestData = {
-        hospitalId: this.hospital.id,
-        date: this.selectedDate,
-        startTime: startTime
-      };
-      try {
-        await axios.post("/reservation-slot", requestData);
-        await this.fetchAvailableTimes();  // 새로운 예약 슬롯을 추가한 후 사용 가능한 예약 슬롯 목록을 갱신
-        // eslint-disable-next-line no-empty
-      } catch (error) {
-      }
-    },
-    async convertAddressToCoordinates() {
-      try {
-        const coordinates = await this.fetchCoordinatesFromAPI(this.editHospitalData.address);
+    watch: {
+        hospital(newVal) {
+            console.log(newVal.ownerEmail)
+            console.log(this.email)
 
-        // 얻어진 위도와 경도를 데이터에 저장
-        this.editHospitalData.latitude = coordinates.latitude;
-        this.editHospitalData.longitude = coordinates.longitude;
-        // eslint-disable-next-line no-empty
-      } catch (error) {
-      }
-    },
-    openKakaoAddressSearch() {
-      new window.daum.Postcode({
-        oncomplete: async data => {
-          this.editHospitalData.address = data.address; // 지번 주소
-          await this.convertAddressToCoordinates();
+            if (this.role === "OWNER" && newVal.ownerEmail && newVal.ownerEmail === this.email) {
+                this.isOwner = true;
+            }
+            this.editHospitalData = {...newVal};
         }
-      }).open();
     },
-  }
+    methods: {
+        getKoreanDays(englishDays) {
+            return englishDays.map(englishDay => {
+                const matchingDay = this.days.find(day => day.value === englishDay);
+                return matchingDay ? matchingDay.text : englishDay;
+            });
+        },
+        averageRating(hospital) {
+            if (hospital.reviews && hospital.reviews.length > 0) {
+                const totalRating = hospital.reviews.reduce((sum, review) => sum + review.rate, 0);
+                return parseFloat((totalRating / hospital.reviews.length).toFixed(1));
+            }
+            return 0;
+        },
+        handleFileChange(file) {
+            if (file) {
+                // 이미지 파일 객체를 저장
+                this.editHospitalData.imageFile = file;
+                // 이미지 파일을 URL로 변환하여 미리보기를 생성
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    this.editHospitalData.imageUrl = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        },
+        async reservate(slot) {
+            console.log(slot)
+            const requestData = {
+                hospitalId: slot.hospitalId,
+                date: slot.date,
+                startTime: slot.startTime
+            };
+            try {
+                await axios.post('/reservations', requestData)
+                // eslint-disable-next-line no-empty
+                console.log(requestData)
+                slot.reserved = true;
+            } catch (error){
+                console.log(error)
+            }
+        },
+        async fetchAvailableTimes() {
+            try {
+                const response = await axios.get('/reservation-slot', {
+                    params: {
+                        hospitalId: this.hospital.id,
+                        date: this.selectedDate
+                    }
+                });
+                this.availableSlots = response.data;
+                // eslint-disable-next-line no-empty
+            } catch (error) {
+            }
+        },
+        openEditHospital() {
+            this.appointmentDialog = false;
+            this.editHospitalDialog = true;
+        },
+        async updateHospital() {
+            if (this.editHospitalData.imageFile) {
+                const uploadedImageUrl = await this.uploadImageToS3(this.editHospitalData.imageFile);
+                if (uploadedImageUrl) {
+                    this.editHospitalData.imageUrl = uploadedImageUrl;
+                }
+            }
+            try {
+                const response = await axios.put(`/hospitals/${this.hospital.id}`, this.editHospitalData);
+                if (response.data.statusCode === 400) {
+                    alert(response.data.msg);
+                    this.editHospitalDialog = false;
+                } else {
+                    this.hospital = {...this.editHospitalData};
+                    this.editHospitalDialog = false;
+                }
+                // 성공 알림 또는 리프레시 로직 추가
+                // eslint-disable-next-line no-empty
+            } catch (error) {
+            }
+        },
+        async deleteHospital() {
+            try {
+                const response = await axios.delete(`/hospitals/${this.hospital.id}`);
+                if (response.data.statusCode === 400) {
+                    alert(response.data.msg);
+                }
+                // 성공 후 리디렉션 또는 알림 표시
+                await this.$router.push("/")
+            } catch (error) {
+                console.error("Failed to delete hospital:", error);
+            }
+        },
+        async created() {
+            const hospitalId = this.$route.params.id;
+            try {
+                const response = await axios.get(`/hospitals/${hospitalId}`);
+                this.hospital = response.data;
+                console.log(this.hospital)
+                // eslint-disable-next-line no-empty
+            } catch (error) {
+            }
+        },
+        openAppointmentModal() {
+            this.appointmentDialog = true;
+        },
+        async addAppointmentSlot() {
+            if (!this.selectedHour || !this.selectedMinute) {
+                alert("시간과 분을 모두 선택해주세요.");
+                return;
+            }
+            // 선택된 시간과 분으로 LocalTime 객체를 만듭니다.
+            const paddedHour = String(this.selectedHour).padStart(2, '0');
+            const paddedMinute = String(this.selectedMinute).padStart(2, '0');
+            const startTime = `${paddedHour}:${paddedMinute}`;      // 백엔드에 POST 요청을 보낼 데이터를 구성합니다.
+            const requestData = {
+                hospitalId: this.hospital.id,
+                date: this.selectedDate,
+                startTime: startTime
+            };
+            try {
+                await axios.post("/reservation-slot", requestData);
+                await this.fetchAvailableTimes();  // 새로운 예약 슬롯을 추가한 후 사용 가능한 예약 슬롯 목록을 갱신
+                // eslint-disable-next-line no-empty
+            } catch (error) {
+            }
+        },
+        async convertAddressToCoordinates() {
+            try {
+                const coordinates = await this.fetchCoordinatesFromAPI(this.editHospitalData.address);
+
+                // 얻어진 위도와 경도를 데이터에 저장
+                this.editHospitalData.latitude = coordinates.latitude;
+                this.editHospitalData.longitude = coordinates.longitude;
+                // eslint-disable-next-line no-empty
+            } catch (error) {
+            }
+        },
+        openKakaoAddressSearch() {
+            new window.daum.Postcode({
+                oncomplete: async data => {
+                    this.editHospitalData.address = data.address; // 지번 주소
+                    await this.convertAddressToCoordinates();
+                }
+            }).open();
+        },
+    }
 };
 </script>
 
 <style scoped>
 .fill-height {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: center; /* 여기 추가 */
-  align-items: center; /* 여기 추가 */
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* 여기 추가 */
+    align-items: center; /* 여기 추가 */
 }
 
 .slot-list-container {
-  overflow-y: hidden;
-  padding-right: 10px;
-  flex-grow: 1; /* 이 스타일을 통해 남은 공간을 모두 차지하도록 설정 */
+    overflow-y: hidden;
+    padding-right: 10px;
+    flex-grow: 1; /* 이 스타일을 통해 남은 공간을 모두 차지하도록 설정 */
 }
 
 .flex-container {
-  display: flex;
-  flex-direction: column;
-  height: 100%; /* Ensure card expands fully if needed */
+    display: flex;
+    flex-direction: column;
+    height: 100%; /* Ensure card expands fully if needed */
 }
 
 .flex-child {
-  flex-grow: 1;
-  display: flex;
-  flex-direction: column;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
 }
 
 .slot-list-container {
-  overflow-y: auto;
-  padding-right: 10px;
+    overflow-y: auto;
+    padding-right: 10px;
 }
 </style>

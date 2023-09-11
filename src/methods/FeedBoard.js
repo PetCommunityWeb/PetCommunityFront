@@ -1,5 +1,6 @@
 import axios from "@/axios/axios-instance";
 import AWS from 'aws-sdk';
+import { checkAuthAndAlert } from "@/methods/authChecker";
 
 export default {
     name: "FeedBoard",
@@ -47,6 +48,9 @@ export default {
 
         // feed 생성 및 백에 request 전달
         async uploadImage() {
+            if (!checkAuthAndAlert()) {
+                return;
+            }
             if (this.selectedImage) {
                 const imageUrl = await this.uploadImageToS3(this.selectedImage);
                 const data = {
@@ -104,6 +108,9 @@ export default {
         // 댓글 작성
         async postComment(feedId) {
             // 댓글 내용이 없는 경우
+            if (!checkAuthAndAlert()) {
+                return;
+            }
             if (!this.newCommentContent.trim()) {
                 alert('댓글 내용을 입력해주세요.');
                 return;
@@ -128,6 +135,9 @@ export default {
 
         // feed 좋아요
         async postLike(feedId) {
+            if (!checkAuthAndAlert()) {
+                return;
+            }
             try {
                 const response = await axios.post(`/feeds/${feedId}/likes`);
                 // 직접 likeCount 증가 or 감소
@@ -157,6 +167,9 @@ export default {
 
         // 피드 수정 모달 열기
         openEditFeedModal() {
+            if (!checkAuthAndAlert()) {
+                return;
+            }
             this.editFeedDialog = true;
             this.editTitle = this.feedDetail.title;
             this.editContent = this.feedDetail.content;
@@ -190,6 +203,9 @@ export default {
 
         // feed 삭제
         async deleteFeed(feedId) {
+            if (!checkAuthAndAlert()) {
+                return;
+            }
             try {
                 const response = await axios.delete(`/feeds/${feedId}`);
                 if (response.data.statusCode === 200) {
@@ -223,6 +239,9 @@ export default {
 
         // 댓글 수정 모드 시작
         startEditingComment(id, content) {
+            if (!checkAuthAndAlert()) {
+                return;
+            }
             this.editingCommentId = id;
             this.newCommentContent = content;
         },
