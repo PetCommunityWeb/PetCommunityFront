@@ -29,3 +29,6 @@
 .sort-select {
     width: 150px; /* 원하는 크기에 맞게 조절 */
 }
+.no-hover {
+    pointer-events: none;
+}
