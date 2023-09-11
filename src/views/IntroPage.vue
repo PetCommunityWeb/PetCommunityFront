@@ -60,6 +60,22 @@ export default {
     font-weight: 400; /* 폰트 두께 설정 */
     font-style: normal; /* 폰트 스타일 설정 (normal, italic 등) */
 }
+@font-face {
+    font-family: '푸터폰트'; /* 원하는 폰트 이름 */
+    src: url('/src/views/fonts/a시월구일1.ttf') format('truetype'); /* 폰트 파일 경로 및 포맷 */
+    /* 다른 포맷에 따라 format 속성 변경 가능 */
+    font-weight: 400; /* 폰트 두께 설정 */
+    font-style: normal; /* 폰트 스타일 설정 (normal, italic 등) */
+
+}
+
+@font-face {
+    font-family: '버튼글꼴'; /* 원하는 폰트 이름 */
+    src: url('/src/views/fonts/a옛날사진관3.ttf') format('truetype'); /* 폰트 파일 경로 및 포맷 */
+    /* 다른 포맷에 따라 format 속성 변경 가능 */
+    font-weight: 400; /* 폰트 두께 설정 */
+    font-style: normal; /* 폰트 스타일 설정 (normal, italic 등) */
+}
 
 /* 대문 페이지의 스타일을 디자인합니다. */
 .intro {
@@ -93,6 +109,7 @@ footer {
     width: 100%; /* 전체 너비 사용 */
     background-color: #f8f8f8; /* footer 배경색 설정 */
     padding: 10px; /* padding 추가 */
+    font-family: "푸터폰트";
 }
 
 .footer-content {
@@ -114,6 +131,7 @@ footer {
     font-size: 16px; /* 버튼의 글자 크기 조절 */
     margin: 10px; /* 버튼 간격 조절 */
     border-radius: 5px; /* 버튼의 모서리를 둥글게 만듦 */
+    font-family: "버튼글꼴";
 }
 
 .btn:hover {
