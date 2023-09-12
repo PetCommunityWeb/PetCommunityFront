@@ -80,12 +80,23 @@ export default {
 .toolbar-title-link:hover {
     color: rgba(255, 255, 255, 0.7); /* 마우스 오버 시 색상 */
 }
-
+/*------------홈버튼*/
 .mr-2 {
     width: 80px;
     height: 80px;
 }
 
+.mr-2 {
+    -webkit-filter: grayscale(0) blur(0);
+    filter: grayscale(0) blur(0);
+    -webkit-transition: .3s ease-in-out;
+    transition: .3s ease-in-out;
+}
+.mr-2:hover {
+    -webkit-filter: grayscale(100%) blur(3px);
+    filter: grayscale(100%) blur(3px);
+}
+/*----------------*/
 .custom-button {
     color: black;
     font-stretch: condensed;
