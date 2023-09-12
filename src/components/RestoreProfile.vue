@@ -25,7 +25,8 @@
 </template>
 
 <script>
-import axios from '@/axios/axios-instance'; // 필요하다면 경로를 수정하세요
+import axios from '@/axios/axios-instance';
+import router from '@/router'
 
 export default {
     data() {
@@ -36,7 +37,9 @@ export default {
             isEmailVerified: false, // 이메일 인증 확인
         };
     },
+
     methods: {
+
         async requestVerification() {
             // 이메일 인증 요청 처리 로직 구현
             try {
@@ -78,40 +81,27 @@ export default {
 
             try {
                 const formData = new FormData();
-                formData.append('email',email)
+                formData.append('email', email)
 
                 const response = await axios.post(`/users/profile/restore`, formData, {
                     headers: {
-                        'Content-Type' : 'application/x-www-form-urlencoded'
+                        'Content-Type': 'application/x-www-form-urlencoded'
                     }
                 });
 
                 if (response.status === 200) {
                     console.log("데이터 복구 성공");
                     alert("회원 데이터가 복구되었습니다. 로그인 해주세요.");
-                    // 성공 시 사용자에게 알림 또는 리디렉션 등을 수행할 수 있음
+                    await router.push("/login"); // 로그인 화면으로 이동
+
                 } else {
                     console.error("데이터 복구 실패");
                 }
             } catch (error) {
                 console.error("데이터 복구 오류:", error);
+
             }
         },
-
-        async getUserIdByEmail(email) {
-            try {
-                const response = await axios.get(`/getUserIdByEmail?email=${email}`);
-                if (response.status === 200) {
-                    return response.data;
-                } else {
-                    console.error("사용자 ID 조회 실패");
-                    return null;
-                }
-            } catch (error) {
-                console.error("사용자 ID 조회 오류:", error);
-                return null;
-            }
-        }
 
     }
 }
