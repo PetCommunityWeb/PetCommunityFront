@@ -231,6 +231,7 @@ window.routeToHospitalDetail = function (event) {
     align-items: center;
     height: 100vh;
     padding: 12px;
+    margin-bottom: 50px;
 }
 
 .content-wrapper {
