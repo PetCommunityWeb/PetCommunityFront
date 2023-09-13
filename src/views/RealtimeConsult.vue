@@ -40,7 +40,7 @@
                 />
             </v-col>
             <v-col cols="12" sm="4" md="3">
-                <v-btn @click="createRoom" color="primary">방 생성</v-btn>
+                <v-btn class="create" @click="createRoom" color="primary">방 생성</v-btn>
             </v-col>
         </v-row>
         <!--방 목록-->
@@ -137,6 +137,10 @@ export default {
 <style scoped>
 .cursor-pointer {
     cursor: pointer;
+}
+
+.create{
+    margin-top : 15px;
 }
 
 .v-list-item-avatar {

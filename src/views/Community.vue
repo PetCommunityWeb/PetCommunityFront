@@ -3,7 +3,7 @@
     <v-app>
       <v-container>
           <h1 align="center" style="margin:15px 0 15px 0;">커뮤니티</h1>
-        <v-row justify="center" class="text-center mt-3"> <!-- mt-3 추가 -->
+        <v-row justify="center" class="header mt-3"> <!-- mt-3 추가 -->
 
           <v-col cols="auto" class="mb-0">
             <router-link to="/community/feed">

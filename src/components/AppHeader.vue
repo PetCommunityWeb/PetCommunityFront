@@ -8,7 +8,7 @@
         <NotificationIcon v-if="isLoggedIn" class="ml-16"></NotificationIcon>
 
         <v-spacer></v-spacer>
-        <div>
+        <div class="menu-button">
             <v-btn text to="/find-hospital" class="custom-button">
                 <v-icon left>mdi-map-search</v-icon>
                 병원 찾기
@@ -59,6 +59,16 @@ export default {
 };
 </script>
 <style scoped>
+@font-face {
+    font-family: '버튼글꼴'; /* 원하는 폰트 이름 */
+    src: url('/src/views/fonts/a옛날사진관3.ttf') format('truetype'); /* 폰트 파일 경로 및 포맷 */
+    /* 다른 포맷에 따라 format 속성 변경 가능 */
+    font-weight: 400; /* 폰트 두께 설정 */
+    font-style: normal; /* 폰트 스타일 설정 (normal, italic 등) */
+}
+.menu-button{
+    font-family: "버튼글꼴";
+}
 .toolbar-title-link {
     text-decoration: none; /* 밑줄 제거 */
     color: white; /* 텍스트 색상 */
@@ -70,12 +80,23 @@ export default {
 .toolbar-title-link:hover {
     color: rgba(255, 255, 255, 0.7); /* 마우스 오버 시 색상 */
 }
-
+/*------------홈버튼*/
 .mr-2 {
     width: 80px;
     height: 80px;
 }
 
+.mr-2 {
+    -webkit-filter: grayscale(0) blur(0);
+    filter: grayscale(0) blur(0);
+    -webkit-transition: .3s ease-in-out;
+    transition: .3s ease-in-out;
+}
+.mr-2:hover {
+    -webkit-filter: grayscale(100%) blur(3px);
+    filter: grayscale(100%) blur(3px);
+}
+/*----------------*/
 .custom-button {
     color: black;
     font-stretch: condensed;
