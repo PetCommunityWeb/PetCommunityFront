@@ -30,7 +30,12 @@
         <!--        <p class="slide-upper-text">나의 반려 동물을 자랑해보세요!</p>-->
         <img src="@/assets/images/vet.png" class="pets-1" alt="">
         <hr class="hr-15">
+        <img src="@/assets/images/consult.png" class="pets-3" alt="">
+        <hr class="hr-15">
         <img src="@/assets/images/pets2.png" class="pets-2" alt="">
+        <hr class="hr-15">
+        <img src="@/assets/images/outro.png" class="pets-4" alt="">
+
 
         <div align="center" class="content-image">
             <!--            <v-img :src="'@/assets/images/dog1.png'"></v-img>-->
@@ -100,7 +105,7 @@ export default {
     text-transform: uppercase;
     color: #222;
     letter-spacing: 1px;
-    font-family: "a타이틀고딕2", serif;
+    font-family: "a타이틀고딕4", serif;
     font-weight: 400;
 }
 
@@ -220,14 +225,26 @@ hr.hr-15:after {
 
 .pets-1 {
     max-width: 1200px;
-
     margin: 10px auto 10px;
     display: flex;
+
 }.pets-2 {
     max-width: 1200px;
+
     margin: 40px auto 50px;
     display: flex;
 }
+.pets-3 {
+    max-width: 1200px;
+
+    margin: 40px auto 50px;
+    display: flex;
+}
+.pets-4 {
+     max-width: 1200px;
+     margin: 40px auto 80px;
+     display: flex;
+ }
 
 footer {
     height: 110px;
