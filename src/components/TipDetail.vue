@@ -4,6 +4,7 @@
       <v-col cols="12">
         <h2 class="text-h5">{{ title }}</h2>
         <p class="mb-2">{{ username }}</p>
+        <p class="mb-3">{{ customLocalDateTimeFormat }}</p>
         <div class="content">{{ content }}</div>
       </v-col>
     </v-row>
@@ -45,6 +46,9 @@ export default {
       likeCount: 0,
       liked: false,
       imageUrl: "", // 이미지 URL을 저장할 변수 추가
+      createdAt: this.createdAt,
+      modifiedAt: this.modifiedAt,
+      customLocalDateTimeFormat: this.customLocalDateTimeFormat,
       id: null,
     };
   },
@@ -75,6 +79,9 @@ export default {
         this.likeCount = response.data.likeCount;
         this.liked = response.data.liked;
         this.imageUrl = response.data.imageUrl; // 이미지 URL을 받아옴
+        this.createdAt = response.data.createdAt;
+        this.modifiedAt = response.data.modifiedAt;
+        this.customLocalDateTimeFormat = response.data.customLocalDateTimeFormat;
       } catch (error) {
         console.error("Error fetching tip detail:", error);
       }
@@ -83,6 +90,11 @@ export default {
     // 글 좋아요 상태 변경 시 호출되는 메서드
     async tipPostLike() {
       try {
+
+        if (!this.$store.state.id) {
+          alert('로그인이 필요합니다.');
+          return;
+        }
         const id = this.$route.params.id;
         const response = await axios.post(`/tips/${id}/likes`);
         if (response.data.msg === "성공") {

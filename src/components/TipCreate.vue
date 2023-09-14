@@ -56,6 +56,7 @@ export default {
   methods: {
     async writeClick() {
       try {
+
         let response;
 
         if (this.selectedImage) {

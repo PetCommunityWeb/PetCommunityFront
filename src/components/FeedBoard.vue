@@ -14,21 +14,19 @@
           <v-img
               :src="feed.imageUrl"
               max-height="300px"
-              class="my-3"
+              class="my-3 image-hover"
               @click="showFeedDetail(feed.id)"
           ></v-img>
 
           <v-card-subtitle>{{ feed.title }}</v-card-subtitle>
           <v-card-text>{{ feed.content }}</v-card-text>
 
-          <v-card-actions>
-            <v-btn>
-              <v-icon left color = "red">mdi-heart</v-icon> {{ feed.likeCount }}
-            </v-btn>
-            <v-btn>
-              <v-icon left color = "grey">mdi-comment-outline</v-icon> {{ feed.commentCount }}
-            </v-btn>
-          </v-card-actions>
+          <div class="icon-container">
+            <v-icon left color="red">mdi-heart</v-icon>
+            <span class="icon-text">{{ feed.likeCount }}</span>
+            <v-icon left color="grey">mdi-comment-outline</v-icon>
+            <span class="icon-text">{{ feed.commentCount }}</span>
+          </div>
         </v-card>
       </v-col>
     </v-row>
@@ -135,10 +133,9 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
-
     <!-- Vuetify의 v-dialog를 사용한 모달 -->
     <v-dialog v-model="dialog" max-width="600px">
-      <v-card>
+      <v-card v-if="isUserLoggedIn">
         <v-card-title>사진 업로드</v-card-title>
         <v-card-text>
           <!-- 제목 입력 -->
@@ -162,6 +159,10 @@
           <v-btn text @click="dialog = false">취소</v-btn>
           <v-btn text color="primary" @click="uploadImage">업로드</v-btn>
         </v-card-actions>
+      </v-card>
+      <v-card v-else>
+        <p>로그인이 필요합니다. 로그인 페이지로 이동하려면 아래 버튼을 클릭하세요.</p>
+        <v-btn text @click="goToLoginPage">로그인 페이지로 이동</v-btn>
       </v-card>
     </v-dialog>
   </div>
@@ -187,10 +188,25 @@ export default {
       editFeedDialog: false,
       editTitle: '',
       editContent: '',
-      editSelectedImage: null
+      editSelectedImage: null,
     };
   },
+  computed: {
+    isUserLoggedIn() {
+      // 로그인 상태 여부를 확인하는 computed property
+      if (!this.$store.state.id) {
+        alert('로그인이 필요합니다.');
+        return false; // 로그인되지 않은 상태임을 나타내기 위해 false를 반환합니다.
+      } else {
+        return true; // 로그인된 상태임을 나타내기 위해 true를 반환합니다.
+      }
+    },
+  },
+
   methods: {
+    goToLoginPage() {
+      this.$router.push("/login"); // 로그인 페이지로 이동하는 라우터 경로를 지정해주세요
+    },
     // S3에 사진 업로드
     async uploadImageToS3(file) {
       AWS.config.update({
@@ -282,6 +298,10 @@ export default {
 
     // feed 좋아요
     async postLike(feedId) {
+      if (!this.$store.state.id) {
+        alert('로그인이 필요합니다.');
+        return;
+      }
       try {
         const response = await axios.post(`/feeds/${feedId}/likes`);
         // 직접 likeCount 증가 or 감소
@@ -420,6 +440,7 @@ export default {
   padding: 10px;
   box-shadow: 0 4px 8px rgba(0,0,0,0.1);
   transition: all 0.3s ease;
+
 }
 
 .feed-item:hover {
@@ -438,5 +459,20 @@ export default {
 
 .comment-item > .v-list-item__title > .v-icon {
   color: #777;
+}
+
+.icon-container {
+  display: flex; /* 아이콘과 텍스트를 가로로 나란히 정렬 */
+  align-items: center; /* 수직 가운데 정렬 */
+}
+
+.icon-text {
+  margin-right: 10px; /* 원하는 여백 크기 설정 */
+}
+
+.image-hover:hover {
+  /* 원하는 hover 스타일을 여기에 추가 */
+  opacity: 0.8; /* 예시: 투명도를 낮추는 효과 */
+  cursor: pointer; /* 예시: 커서 모양을 포인터로 변경 */
 }
 </style>
