@@ -13,7 +13,7 @@
 
       <template v-slot:item.title="{ item }">
         <div class="d-flex align-center">
-          <v-img v-if="item.imageUrl" :src="item.imageUrl" class="thumbnail-image"></v-img>
+          <v-img v-if="item.thumbnailImage" :src="item.thumbnailImage" class="thumbnail-image"></v-img>
           {{ item.title }}
         </div>
       </template>
@@ -66,7 +66,13 @@ export default {
     async fetchTips() {
       try {
         const response = await axios.get("/tips");
-        this.tips = response.data.map(item => ({ ...item, username: item.username }));
+        // this.tips = response.data.map(item => ({ ...item, username: item.username }));
+        this.tips = response.data.map(item => {
+          const imgRegex = /<img[^>]+src="([^">]+)"/;
+          const matches = item.content.match(imgRegex);
+          const thumbnail = matches ? matches[1] : null;
+          return { ...item, username: item.username, thumbnailImage: thumbnail };
+        });
       } catch (error) {
         console.error("Error fetching tips:", error);
       }
