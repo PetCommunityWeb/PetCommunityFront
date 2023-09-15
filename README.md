@@ -151,7 +151,7 @@
 ## 반려 동물 서비스
 ![반려동물서비스](https://github.com/PetCommunityWeb/PetCommunityFront/assets/130136857/77a0a8f8-67ca-4a0d-8677-a7ca35615eb6)
 
-## 마이페이
+## 마이페이지
 ![마이페이지 - 예약 등](https://github.com/PetCommunityWeb/PetCommunityFront/assets/130136857/36891d31-15f1-44c4-87f6-c388ac85e350)
 
 
