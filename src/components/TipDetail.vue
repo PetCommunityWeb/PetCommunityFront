@@ -4,7 +4,7 @@
             <v-col cols="12">
                 <h2 class="text-h5">{{ title }}</h2>
                 <p class="mb-2">{{ username }}</p>
-                <div class="content">{{ content }}</div>
+              <div class="content" v-html="content"></div>
             </v-col>
         </v-row>
         <v-row>
