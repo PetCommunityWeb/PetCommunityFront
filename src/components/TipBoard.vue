@@ -90,7 +90,12 @@ export default {
               keyword: this.searchKeyword
             }
           });
-          this.tips = response.data.map(item => ({ ...item, username: item.username }));
+          this.tips = response.data.map(item => {
+            const imgRegex = /<img[^>]+src="([^">]+)"/;
+            const matches = item.content.match(imgRegex);
+            const thumbnail = matches ? matches[1] : null;
+            return { ...item, username: item.username, thumbnailImage: thumbnail };
+          });
           // eslint-disable-next-line no-empty
         } catch (error) {
         }
@@ -102,7 +107,12 @@ export default {
               keyword: this.searchKeyword
             }
           });
-          this.tips = response.data.map(item => ({ ...item, username: item.username }));
+          this.tips = response.data.map(item => {
+            const imgRegex = /<img[^>]+src="([^">]+)"/;
+            const matches = item.content.match(imgRegex);
+            const thumbnail = matches ? matches[1] : null;
+            return { ...item, username: item.username, thumbnailImage: thumbnail };
+          });
         } catch (error) {
           console.error("Error searching by content:", error);
         }
