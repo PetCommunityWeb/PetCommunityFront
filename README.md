@@ -1,4 +1,46 @@
-## 🛠️ 기술 스택
+<div align="center">
+  <h1>🐶 PET병 <h3> Pet Community for Everyone </h3></h1>
+</div>
+
+<div align="right">last update : 2023.9.15.</div>
+
+---
+---
+# 1. 프로젝트 소개 
+
+## 개요
+
+>반려동물 관련 콘텐츠 및 동물병원 찾기 서비스를 제공하는 웹페이지로,
+>반려동물을 뜻하는 PET과 병(illness)의 발음을 이용해 **[PET병]** 이라는 이름의 프로젝트를 만들게 되었다.
+>
+>We are creating a project called '[Pet병]' using the pronunciation of PET, which means a companion animal, and '병(illness)' to provide a web service for pet-related content and finding animal hospitals.
+
+## 배포 주소
+>PetCommunity : https://pet-community.net/
+
+## 프로젝트 기간
+>스파르타코딩클럽 내일배움캠프 Spring 6기  
+>2023.08.16. - 2023.09.18. ~ (last update date)
+
+## 프로젝트 멤버
+>송이삭  
+>최혁진  
+>지은영  
+>최종우 ( [github](https://github.com/Jonggae) )
+
+# 2. 프로젝트 실행 환경
+
+## Requirements
+
+### for building and running the application you need:
+
+- Use IntelliJ Ultimate
+- Windows 11 
+- SpringBoot 3.1.2
+- java 17
+- other back-end stacks
+
+# 3. 기술 스택
 
 ---
 #### Front-End
@@ -55,7 +97,61 @@
 ---
 
 ***
-## 📚 Service Architecture
+
+# 4. Service Architecture
 
 ---
 <img src="image/ServiceArchitecture_v3.png">
+
+# 5. 주요 기능
+
+## 동물 병원 등록 / 검색
+- 병원 운영진에게는 동물 병원을 등록할 수 있는 기능을 제공
+- 반려동물 보호자는 등록된 병원을 검색하여 예약 할 수 있음
+
+## 동물 전문가와의 실시간 채팅
+- 등록된 병원과 직접 1:1 채팅이 가능
+
+## 반려 동물 커뮤니티 / 팁 게시판
+- 사용자들은 자신의 반려동물 사진을 올려 자랑하거나 공유할 수 있음.
+- 동물 키우기에 필요한 정보들을 게시판으로 올릴 수 있음.
+
+## 반려 동물 서비스 
+- 기타 반려 동물 서비스 (식품 가게, 미용 등) 위치 제공
+
+## 부가 기능
+- 게시글 댓글, 좋아요 (팁 게시판 댓글 제외)
+- 병원 진료 에약 후 시간이 지나면 별점, 리뷰 작성 가능
+- 회원 탈퇴 시 사용자 정보, 게시글, 리뷰 삭제 / 요청시 복원 가능
+- 카카오, 구글, 네이버 소셜 로그인
+- 기타 세부 기능
+
+***
+
+# 6. 화면 구성
+
+## 메인 화면
+![메인](https://github.com/PetCommunityWeb/PetCommunityFront/assets/130136857/3d62a09a-1d9b-48a0-9b39-fbcf07220830)
+
+## 로그인
+![로그인](https://github.com/PetCommunityWeb/PetCommunityFront/assets/130136857/34168acc-e3ef-4f8e-bf66-8e90fef3ccd1)
+
+## 병원 찾기
+![병원찾기](https://github.com/PetCommunityWeb/PetCommunityFront/assets/130136857/3652eda9-debd-4ccf-b7c9-82cb013de19d)
+
+## 실시간 채팅
+![실시간채팅](https://github.com/PetCommunityWeb/PetCommunityFront/assets/130136857/79378d34-f103-4aeb-9196-36568b7da2bd)
+
+## 커뮤니티 - 피드
+![커뮤니티](https://github.com/PetCommunityWeb/PetCommunityFront/assets/130136857/0283381e-ac2f-42f5-9259-d6b7ff8a4fee)
+
+## 커뮤니티 - 팁
+![커뮤니티 - 팁](https://github.com/PetCommunityWeb/PetCommunityFront/assets/130136857/235f7cfe-c6c3-4076-a53e-0a7cec003979)
+
+## 반려 동물 서비스
+![반려동물서비스](https://github.com/PetCommunityWeb/PetCommunityFront/assets/130136857/77a0a8f8-67ca-4a0d-8677-a7ca35615eb6)
+
+## 마이페이
+![마이페이지 - 예약 등](https://github.com/PetCommunityWeb/PetCommunityFront/assets/130136857/36891d31-15f1-44c4-87f6-c388ac85e350)
+
+
